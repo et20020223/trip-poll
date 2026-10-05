@@ -1,0 +1,343 @@
+/** Private bound spreadsheet. Run initializeSurvey from the editor. */
+const TABLES_ = {
+  SurveySettings: ['key','value'],
+  Users: ['email','name','department','role','active','googleSub'],
+  Places: ['id','name','description','budgetMin','budgetMax','days','transport','stay','highlights','intensity','notes','referenceUrl','createdBy','createdAt','finalist'],
+  UnavailableWeeks: ['id','email','weekStart','note','updatedAt'],
+  Ballots: ['email','round','selections','updatedAt'],
+  Attractions: ['id','email','name','description','url','createdAt'],
+  Audit: ['id','actor','action','detail','createdAt']
+};
+const ACTIONS_ = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
+
+// Run from the editor after adding scopes. This does not read or change survey data.
+function authorizeServices() {
+  ScriptApp.requireScopes(ScriptApp.AuthMode.FULL, [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/script.external_request'
+  ]);
+}
+function initializeSurvey() { authorizeServices(); SpreadsheetApp.getUi(); withLock_(() => setup_()); }
+function onOpen() { SpreadsheetApp.getUi().createMenu('旅遊調查').addItem('初始化五階段調查','initializeSurvey').addToUi(); }
+function setup_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error('請從試算表的擴充功能開啟 Apps Script。');
+  PropertiesService.getScriptProperties().setProperty('SPREADSHEET_ID',ss.getId());
+  Object.keys(TABLES_).forEach(name => {
+    const sheet = ss.getSheetByName(name) || ss.insertSheet(name);
+    if (!sheet.getLastRow()) {
+      sheet.appendRow(TABLES_[name]); sheet.setFrozenRows(1);
+      sheet.getRange(1,1,1,TABLES_[name].length).setFontWeight('bold').setBackground('#dbeafe');
+    } else {
+      const header = sheet.getRange(1,1,1,TABLES_[name].length).getValues()[0];
+      if (header.some((v,i) => v !== TABLES_[name][i])) throw new Error(name+' 表頭不符，請先修正；原資料不會清空。');
+    }
+  });
+  const defaults = { TITLE:'2026~2027 員工旅遊意願調查', FRONTEND_URL:'http://127.0.0.1:4173/', STAGE:'1', VOTE_LIMIT_2:'3', VOTE_LIMIT_3:'1', START_YEAR:'2026', FINAL_PLACE:'', FINAL_START:'', FINAL_END:'', ANNOUNCEMENT:'', REVISION:'1' };
+  const existing = settings_();
+  Object.entries(defaults).forEach(([k,v]) => { if (!(k in existing)) append_('SurveySettings',[k,v]); });
+  if (!rows_('Users').length) append_('Users',['admin@example.com','示範管理員','','admin',true,'']);
+  ss.toast('五階段調查已建立。請填入 Users 員工 Email 名單，並設定 Google OAuth。');
+  SpreadsheetApp.flush();
+}
+function spreadsheet_() {
+  const id = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
+  if (!id) throw new Error('管理員尚未初始化調查。');
+  return SpreadsheetApp.openById(id);
+}
+function sheet_(name) {
+  const sheet = spreadsheet_().getSheetByName(name);
+  if (!sheet) throw new Error('缺少工作表 '+name+'，請先初始化。');
+  return sheet;
+}
+function rows_(name) {
+  return sheet_(name).getDataRange().getValues().slice(1).map((raw,index) => {
+    const row = raw.map((value,column) => {
+      if (!(value instanceof Date)) return value;
+      const calendarDate = (name === 'UnavailableWeeks' && column === 2) ||
+        (name === 'SurveySettings' && column === 1 && ['FINAL_START','FINAL_END'].includes(raw[0]));
+      return calendarDate ? Utilities.formatDate(value,spreadsheet_().getSpreadsheetTimeZone(),'yyyy-MM-dd') : value.toISOString();
+    });
+    row.sheetRow = index+2;
+    return row;
+  }).filter(row => row.some(value => value !== ''));
+}
+function append_(name,row) { sheet_(name).appendRow(row); }
+function write_(name,index,row) { sheet_(name).getRange(rows_(name)[index].sheetRow,1,1,row.length).setValues([row]); }
+function remove_(name,index) { sheet_(name).deleteRow(rows_(name)[index].sheetRow); }
+function truth_(v) { return v === true || String(v).toUpperCase() === 'TRUE'; }
+function settings_() { return Object.fromEntries(rows_('SurveySettings').map(r => [String(r[0]),String(r[1])])); }
+function setting_(key,value) {
+  const rows = rows_('SurveySettings'); const i = rows.findIndex(r => r[0] === key);
+  if (i < 0) append_('SurveySettings',[key,value]); else write_('SurveySettings',i,[key,value]);
+}
+function withLock_(fn) {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try { return fn(); } finally { lock.releaseLock(); }
+}
+function uid_() { return Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,''); }
+function digest_(v) { return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,v).map(b => ('0'+((b+256)%256).toString(16)).slice(-2)).join(''); }
+function now_() { return new Date().toISOString(); }
+function text_(v,max,label,required) {
+  if (typeof v !== 'string' || v.length > max || (required && !v.trim())) throw new Error(label+'格式錯誤或超過 '+max+' 字。');
+  return v.trim();
+}
+function safe_(v) { return /^[\s]*[=+\-@]/.test(String(v)) ? "'"+v : v; }
+function uns_(v) { return String(v).replace(/^'(?=[\s]*[=+\-@])/,''); }
+function integer_(v,min,max,label) {
+  const n = Number(v); if (!Number.isInteger(n) || n < min || n > max) throw new Error(label+'須為 '+min+'～'+max+' 的整數。');
+  return n;
+}
+function email_(v) {
+  const email = String(v||'').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw new Error('Email 格式不正確。');
+  return email;
+}
+function link_(v) {
+  const url = text_(v,1000,'參考網址');
+  if (url && !/^https:\/\/[^\s<>"']+$/.test(url)) throw new Error('參考網址須為 HTTPS 網址。');
+  return url;
+}
+function frontendUrl_() {
+  const url = settings_().FRONTEND_URL || '';
+  if ((!/^https:\/\/[^/?#]+(?:\/[^?#]*)?$/.test(url) && !/^http:\/\/(?:127\.0\.0\.1|localhost):4173\/?$/.test(url)) || url.includes('YOUR-')) throw new Error('請設定有效 FRONTEND_URL。');
+  return url;
+}
+function origin_() { return frontendUrl_().match(/^https?:\/\/[^/]+/)[0]; }
+function doGet(e) {
+  const channel = String(e && e.parameter && e.parameter.channel || '');
+  if (!/^[a-f0-9]{32}$/.test(channel)) return HtmlService.createHtmlOutput('請從員工旅遊調查網站開啟。');
+  const template = HtmlService.createTemplateFromFile('Bridge');
+  template.channelJson = JSON.stringify(channel);
+  template.originJson = JSON.stringify(origin_()).replace(/</g,'\\u003c');
+  return template.evaluate().setTitle('旅遊調查連線').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+function oauth_() {
+  const p = PropertiesService.getScriptProperties();
+  const clientId = p.getProperty('GOOGLE_CLIENT_ID'), secret = p.getProperty('GOOGLE_CLIENT_SECRET');
+  if (!clientId || !secret) throw new Error('管理員尚未完成 Google 登入設定。');
+  return {clientId,secret,domain:p.getProperty('GOOGLE_WORKSPACE_DOMAIN')||''};
+}
+function publicBootstrap_() {
+  const p = PropertiesService.getScriptProperties();
+  return { title:settings_().TITLE, clientId:p.getProperty('GOOGLE_CLIENT_ID')||'', ready:!!(p.getProperty('GOOGLE_CLIENT_ID') && p.getProperty('GOOGLE_CLIENT_SECRET')) };
+}
+function loginBegin_() {
+  oauth_(); const challenge = uid_();
+  CacheService.getScriptCache().put('login:'+digest_(challenge),JSON.stringify({origin:origin_(),expires:Date.now()+300000}),300);
+  return {challenge};
+}
+function login_(request) {
+  if (!/^[a-f0-9]{64}$/.test(String(request.challenge)) || typeof request.code !== 'string' || request.code.length > 4096 || !request.code) throw new Error('登入要求無效。');
+  const cache = CacheService.getScriptCache(), key = 'login:'+digest_(request.challenge), raw = cache.get(key);
+  cache.remove(key);
+  if (!raw) throw new Error('登入要求已過期，請重新登入。');
+  const attempt = JSON.parse(raw); if (attempt.expires < Date.now() || attempt.origin !== origin_()) throw new Error('登入來源或時效無效。');
+  const oauth = oauth_();
+  const tokenResponse = UrlFetchApp.fetch('https://oauth2.googleapis.com/token', {
+    method:'post', payload:{code:request.code,client_id:oauth.clientId,client_secret:oauth.secret,redirect_uri:attempt.origin,grant_type:'authorization_code'}, muteHttpExceptions:true
+  });
+  if (tokenResponse.getResponseCode() !== 200) throw new Error('Google 登入驗證失敗，請重新登入。');
+  const token = JSON.parse(tokenResponse.getContentText());
+  if (!token.access_token) throw new Error('Google 未回傳有效憑證。');
+  const identityResponse = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo',{headers:{Authorization:'Bearer '+token.access_token},muteHttpExceptions:true});
+  if (identityResponse.getResponseCode() !== 200) throw new Error('無法確認 Google 登入身分。');
+  const identity = JSON.parse(identityResponse.getContentText());
+  if (identity.email_verified !== true || typeof identity.sub !== 'string' || !identity.sub) throw new Error('需要已驗證的 Google Email。');
+  const email = email_(identity.email);
+  // Google is authoritative for Gmail and Workspace email. Reject third-party aliases.
+  if (!email.endsWith('@gmail.com') && !identity.hd) throw new Error('請使用 Google Workspace 公司帳號或 Gmail 帳號。');
+  if (oauth.domain && identity.hd !== oauth.domain) throw new Error('請使用指定公司的 Google Workspace 帳號。');
+  const user = userByEmail_(email);
+  if (user.googleSub && user.googleSub !== identity.sub) throw new Error('帳號身分已變更，請聯絡管理員。');
+  if (!user.googleSub) { const row = rows_('Users')[user.index]; row[5] = identity.sub; write_('Users',user.index,row); }
+  const session = uid_(), expires = Date.now()+21600000;
+  cache.put('session:'+digest_(session),JSON.stringify({email,sub:identity.sub,expires}),21600);
+  SpreadsheetApp.flush();
+  return {session,expires,data:load_(user)};
+}
+function userByEmail_(email) {
+  const rows = rows_('Users'); const matches = rows.map((r,index) => ({r,index})).filter(x => String(x.r[0]).trim().toLowerCase() === email);
+  if (matches.length !== 1 || !truth_(matches[0].r[4])) throw new Error('此 Email 沒有填寫權限，請聯絡管理員。');
+  const {r,index} = matches[0];
+  if (!['admin','member'].includes(String(r[3]))) throw new Error('角色設定不正確。');
+  return {email,name:uns_(r[1]),department:uns_(r[2]),role:String(r[3]),googleSub:String(r[5]||''),index};
+}
+function authenticate_(session) {
+  if (typeof session !== 'string' || !/^[a-f0-9]{64}$/.test(session)) throw new Error('請先登入。');
+  const raw = CacheService.getScriptCache().get('session:'+digest_(session));
+  if (!raw) throw new Error('登入已過期，請重新登入。');
+  const s = JSON.parse(raw); if (s.expires <= Date.now()) throw new Error('登入已過期，請重新登入。');
+  const user = userByEmail_(s.email);
+  if (user.googleSub !== s.sub) throw new Error('帳號身分已變更，請重新登入。');
+  return user;
+}
+function admin_(user) { if (user.role !== 'admin') throw new Error('只有管理員可以執行此操作。'); }
+function api(request) {
+  if (!request || !ACTIONS_.includes(request.action)) throw new Error('不支援的操作。');
+  return withLock_(() => {
+    if (request.action === 'bootstrap') return publicBootstrap_();
+    if (request.action === 'loginBegin') return loginBegin_();
+    if (request.action === 'login') return login_(request);
+    const user = authenticate_(request.session);
+    if (request.action === 'logout') { CacheService.getScriptCache().remove('session:'+digest_(request.session)); return {ok:true}; }
+    if (request.action === 'load') return load_(user);
+    const config = config_();
+    if (Number(request.revision) !== config.revision) throw new Error('調查設定已更新，請重新整理後再操作。');
+    const value = request.value || {};
+    switch (request.action) {
+      case 'addPlace': addPlace_(user,value,config); break;
+      case 'deletePlace': deletePlace_(user,value,config); break;
+      case 'saveUnavailable': saveUnavailable_(user,value,config); break;
+      case 'deleteUnavailable': deleteUnavailable_(user,value,config); break;
+      case 'vote': vote_(user,value,config); break;
+      case 'saveSettings': admin_(user); saveSettings_(user,value,config); break;
+      case 'editPlace': admin_(user); editPlace_(user,value,config); break;
+      case 'saveUser': admin_(user); saveUser_(user,value); break;
+      case 'addAttraction': addAttraction_(user,value,config); break;
+      case 'deleteAttraction': deleteAttraction_(user,value,config); break;
+    }
+    SpreadsheetApp.flush(); return load_(user);
+  });
+}
+function iso_(date) { return date.toISOString().slice(0,10); }
+function date_(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error('日期格式不正確。');
+  const date = new Date(value+'T00:00:00Z'); if (!Number.isFinite(date.getTime()) || iso_(date) !== value) throw new Error('日期不存在。');
+  return date;
+}
+function weeks_(year) {
+  const start = new Date(Date.UTC(year,11,1)), end = new Date(Date.UTC(year+1,2,0));
+  const first = new Date(start); first.setUTCDate(first.getUTCDate()-((first.getUTCDay()+3)%7));
+  const result = [];
+  for (let d = first; d <= end; d = new Date(d.getTime()+7*86400000)) {
+    const last = new Date(d.getTime()+5*86400000);
+    if (last >= start) result.push({start:iso_(d),end:iso_(last)});
+  }
+  return result;
+}
+function config_() {
+  const s = settings_();
+  return {title:s.TITLE||'員工旅遊意願調查',stage:integer_(s.STAGE,1,5,'階段'),voteLimit2:integer_(s.VOTE_LIMIT_2,1,100,'第二階段票數'),voteLimit3:integer_(s.VOTE_LIMIT_3,1,100,'第三階段票數'),year:integer_(s.START_YEAR,2020,2100,'年度'),revision:integer_(s.REVISION,1,1e9,'版本'),finalPlace:s.FINAL_PLACE||'',finalStart:s.FINAL_START||'',finalEnd:s.FINAL_END||'',announcement:uns_(s.ANNOUNCEMENT||'')};
+}
+function place_(r) {
+  return {id:String(r[0]),name:uns_(r[1]),description:uns_(r[2]),budgetMin:r[3] === '' ? null : Number(r[3]),budgetMax:r[4] === '' ? null : Number(r[4]),days:uns_(r[5]),transport:uns_(r[6]),stay:uns_(r[7]),highlights:uns_(r[8]),intensity:uns_(r[9]),notes:uns_(r[10]),referenceUrl:String(r[11]),finalist:truth_(r[14])};
+}
+function ballot_(email,round) {
+  const rows = rows_('Ballots').filter(r => String(r[0]) === email && Number(r[1]) === round);
+  if (rows.length > 1) throw new Error('投票資料重複，請聯絡管理員。');
+  return rows.length ? JSON.parse(rows[0][2]||'[]') : [];
+}
+function summary_(places,round,active) {
+  const byEmail = new Map();
+  rows_('Ballots').filter(r => Number(r[1]) === round && active.has(String(r[0]))).forEach(r => byEmail.set(String(r[0]),JSON.parse(r[2]||'[]')));
+  return {round,voters:byEmail.size,total:active.size,ranking:places.map(p => ({id:p.id,name:p.name,votes:[...byEmail.values()].filter(ids => ids.includes(p.id)).length})).sort((a,b) => b.votes-a.votes || a.name.localeCompare(b.name))};
+}
+function load_(user) {
+  const config = config_(), placeRows = rows_('Places'), places = placeRows.map(place_);
+  const active = new Set(rows_('Users').filter(r => truth_(r[4])).map(r => String(r[0]).trim().toLowerCase()));
+  const weeks = weeks_(config.year);
+  const unavailable = rows_('UnavailableWeeks');
+  const weekSummary = weeks.map(w => ({...w,count:new Set(unavailable.filter(r => r[2] === w.start && active.has(String(r[1]))).map(r => String(r[1]))).size}));
+  const ownUnavailable = unavailable.filter(r => r[1] === user.email).map(r => ({id:String(r[0]),weekStart:String(r[2]),note:uns_(r[3])}));
+  const result = {config,weeks,person:{email:user.email,name:user.name,department:user.department,role:user.role},places,ownPlaceIds:placeRows.filter(r => r[12] === user.email).map(r => String(r[0])),unavailable:ownUnavailable,ballot2:ballot_(user.email,2),ballot3:ballot_(user.email,3),weekSummary,results: config.stage >= 4 || user.role === 'admin' ? {primary:summary_(places,2,active),final:summary_(places.filter(p => p.finalist),3,active)} : null,attractions: config.stage === 5 ? rows_('Attractions').map(r => ({id:String(r[0]),name:uns_(r[2]),description:uns_(r[3]),url:String(r[4]),own:r[1] === user.email})) : []};
+  if (user.role === 'admin') result.users = rows_('Users').map(r => ({email:String(r[0]),name:uns_(r[1]),department:uns_(r[2]),role:String(r[3]),active:truth_(r[4])}));
+  return result;
+}
+function stage_(config,allowed) { if (!allowed.includes(config.stage)) throw new Error('目前階段不開放此操作。'); }
+function addPlace_(user,v,c) {
+  stage_(c,[1]); const rows = rows_('Places');
+  if (rows.filter(r => r[12] === user.email).length >= 3) throw new Error('每人最多新增三個地點。');
+  const name = text_(v.name,80,'地點名稱',true), description = text_(v.description,600,'推薦原因',true);
+  if (rows.some(r => uns_(r[1]).toLowerCase() === name.toLowerCase())) throw new Error('已有同名地點，請先查看大家的提案。');
+  append_('Places',[uid_(),safe_(name),safe_(description),'','','','','','','','','',user.email,now_(),false]);
+}
+function deletePlace_(user,v,c) {
+  stage_(c,[1]);
+  const rows = rows_('Places'), index = rows.findIndex(row => row[0] === v.id);
+  if (index < 0) throw new Error('提案已移除或不存在，請重新讀取。');
+  const place = rows[index];
+  if (place[12] !== user.email && user.role !== 'admin') throw new Error('只能移除自己的旅遊提案。');
+  if (c.finalPlace === v.id || rows_('Ballots').some(row => JSON.parse(row[2]||'[]').includes(v.id))) {
+    throw new Error('此提案已有選票或已選定為目的地，不能移除。');
+  }
+  remove_('Places',index);
+  audit_(user,'deletePlace',{id:v.id,name:uns_(place[1]),createdBy:place[12]});
+}
+function saveUnavailable_(user,v,c) {
+  stage_(c,[1,2,3]);
+  if (!weeks_(c.year).some(w => w.start === v.weekStart)) throw new Error('請選擇調查期間內的候選週。');
+  const note = text_(v.note,500,'日期備註'), rows = rows_('UnavailableWeeks');
+  const i = rows.findIndex(r => r[1] === user.email && r[2] === v.weekStart);
+  const row = [i >= 0 ? rows[i][0] : uid_(),user.email,v.weekStart,safe_(note),now_()];
+  if (i >= 0) write_('UnavailableWeeks',i,row); else append_('UnavailableWeeks',row);
+}
+function deleteUnavailable_(user,v,c) {
+  stage_(c,[1,2,3]); const i = rows_('UnavailableWeeks').findIndex(r => r[0] === v.id && r[1] === user.email);
+  if (i < 0) throw new Error('找不到你的日期紀錄。'); remove_('UnavailableWeeks',i);
+}
+function vote_(user,v,c) {
+  stage_(c,[2,3]); if (Number(v.round) !== c.stage) throw new Error('投票輪次不符。');
+  const limit = c.stage === 2 ? c.voteLimit2 : c.voteLimit3;
+  if (!Array.isArray(v.selections) || v.selections.length > limit || new Set(v.selections).size !== v.selections.length) throw new Error('每人最多 '+limit+' 票，每個地點只能投一票。');
+  const eligible = rows_('Places').map(place_).filter(p => c.stage === 2 || p.finalist);
+  if (v.selections.some(id => !eligible.some(p => p.id === id))) throw new Error('地點未入圍或不存在。');
+  const rows = rows_('Ballots'); const i = rows.findIndex(r => r[0] === user.email && Number(r[1]) === c.stage);
+  const row = [user.email,c.stage,JSON.stringify(v.selections),now_()];
+  if (i >= 0) write_('Ballots',i,row); else append_('Ballots',row);
+}
+function audit_(user,action,detail) { append_('Audit',[uid_(),user.email,action,safe_(JSON.stringify(detail)),now_()]); }
+function saveSettings_(user,v,c) {
+  const stage = integer_(v.stage,1,5,'階段'), limit2 = integer_(v.voteLimit2,1,100,'第二階段票數'), limit3 = integer_(v.voteLimit3,1,100,'第三階段票數');
+  const places = rows_('Places').map(place_);
+  if (stage === 2 && !places.length) throw new Error('至少新增一個地點才能開始初選。');
+  if (stage >= 3 && !places.some(p => p.finalist)) throw new Error('請先設定至少一個入圍地點。');
+  const maxExisting = round => Math.max(0,...rows_('Ballots').filter(r => Number(r[1]) === round).map(r => JSON.parse(r[2]||'[]').length));
+  if (limit2 < maxExisting(2) || limit3 < maxExisting(3)) throw new Error('票數上限不能低於已儲存票數；請保留現有上限。');
+  const finalPlace = String(v.finalPlace||''), finalStart = String(v.finalStart||''), finalEnd = String(v.finalEnd||'');
+  if (finalPlace && !places.some(p => p.id === finalPlace && p.finalist)) throw new Error('最終地點須為入圍地點。');
+  if (!!finalStart !== !!finalEnd) throw new Error('請同時選擇出發與返回日期。');
+  if (finalStart) {
+    const start = date_(finalStart), end = date_(finalEnd);
+    const weeks = weeks_(c.year);
+    if (!weeks.some(w => finalStart >= w.start && finalEnd <= w.end && finalStart <= finalEnd)) throw new Error('出遊日期需位於同一個星期四至星期二的候選週內。');
+    if (end < start) throw new Error('返回日期須晚於出發日期。');
+  }
+  if (c.stage < 4 && (finalPlace || finalStart)) throw new Error('第四階段才可公告最終地點與日期，請先切換階段。');
+  if (stage === 5 && (!finalPlace || !finalStart)) throw new Error('進入景點募集前，請先確認最終地點與出遊日期。');
+  const updates = {STAGE:stage,VOTE_LIMIT_2:limit2,VOTE_LIMIT_3:limit3,FINAL_PLACE:finalPlace,FINAL_START:finalStart,FINAL_END:finalEnd,ANNOUNCEMENT:safe_(text_(v.announcement,1000,'公告')),REVISION:c.revision+1};
+  Object.entries(updates).forEach(([k,val]) => setting_(k,val));
+  audit_(user,'saveSettings',updates);
+}
+function editPlace_(user,v,c) {
+  stage_(c,[2,3]); const rows = rows_('Places'); const i = rows.findIndex(r => r[0] === v.id);
+  if (i < 0) throw new Error('找不到地點。');
+  const old = rows[i];
+  const name = text_(v.name,80,'地點名稱',true);
+  if (rows.some((r,j) => j !== i && uns_(r[1]).toLowerCase() === name.toLowerCase())) throw new Error('地點名称重複。');
+  const budget = val => val === '' || val === null ? '' : integer_(val,0,1000000,'預算');
+  const min = budget(v.budgetMin), max = budget(v.budgetMax);
+  if ((min === '') !== (max === '') || (min !== '' && min > max)) throw new Error('請填寫完整預算範圍，最高預算須大於最低預算。');
+  const finalist = v.finalist === true;
+  if (truth_(old[14]) && !finalist && rows_('Ballots').some(r => Number(r[1]) === 3 && JSON.parse(r[2]||'[]').includes(v.id))) throw new Error('此地點已有最終票，不能取消入圍。');
+  const row = [old[0],safe_(name),safe_(text_(v.description,600,'簡介',true)),min,max,safe_(text_(v.days,80,'行程天數')),safe_(text_(v.transport,300,'交通')),safe_(text_(v.stay,300,'住宿')),safe_(text_(v.highlights,600,'活動亮點')),safe_(text_(v.intensity,200,'步行強度')),safe_(text_(v.notes,600,'注意事項')),link_(v.referenceUrl),old[12],old[13],finalist];
+  write_('Places',i,row); setting_('REVISION',c.revision+1); audit_(user,'editPlace',{id:v.id,name});
+}
+function saveUser_(user,v) {
+  const email = email_(v.email), role = v.role;
+  if (!['admin','member'].includes(role) || typeof v.active !== 'boolean') throw new Error('角色或啟用狀態不正確。');
+  const rows = rows_('Users'), i = rows.findIndex(r => String(r[0]).trim().toLowerCase() === email);
+  if (email === user.email && (role !== 'admin' || !v.active)) throw new Error('不能取消自己的管理員權限或停用自己。');
+  if (i >= 0 && truth_(rows[i][4]) && rows[i][3] === 'admin' && (role !== 'admin' || !v.active) && rows.filter(r => r[3] === 'admin' && truth_(r[4])).length <= 1) throw new Error('至少保留一位啟用的管理員。');
+  const row = [email,safe_(text_(v.name,80,'姓名',true)),safe_(text_(v.department,80,'部門')),role,v.active,i >= 0 ? rows[i][5] : ''];
+  if (i >= 0) write_('Users',i,row); else append_('Users',row);
+  audit_(user,'saveUser',{email,role,active:v.active});
+}
+function addAttraction_(user,v,c) {
+  stage_(c,[5]); append_('Attractions',[uid_(),user.email,safe_(text_(v.name,100,'景點名稱',true)),safe_(text_(v.description,600,'推薦原因',true)),link_(v.url),now_()]);
+}
+function deleteAttraction_(user,v,c) {
+  stage_(c,[5]); const rows = rows_('Attractions'), i = rows.findIndex(r => r[0] === v.id);
+  if (i < 0 || (rows[i][1] !== user.email && user.role !== 'admin')) throw new Error('只能刪除自己新增的景點。');
+  remove_('Attractions',i);
+}
