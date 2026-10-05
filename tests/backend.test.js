@@ -12,7 +12,7 @@ function backend() {
     setup_();
     return {api,rows:rows_,settings:setting_,sheet:sheet_,config:config_,weeks:weeks_,cache:CacheService.getScriptCache(),digest:digest_,login:(email,sub='test-sub')=>{
       const user=userByEmail_(email);const row=rows_('Users')[user.index];row[5]=sub;write_('Users',user.index,row);const session=uid_();CacheService.getScriptCache().put('session:'+digest_(session),JSON.stringify({email,sub,expires:Date.now()+600000}),600);return session;
-    },setFetch:fn=>UrlFetchApp.fetch=fn,setProperty:(k,v)=>props.set(k,v)};
+    },setFetch:fn=>UrlFetchApp.fetch=fn,setProperty:(k,v)=>props.set(k,v),dropTable:name=>tables.delete(name)};
   }
   `,context);
   const b=context.backend(),adminEmail='admin@example.com';
@@ -114,6 +114,46 @@ test('rounds are separate upserts; limits, duplicate votes and finalists are che
   b.call(b.member,'vote',{round:3,selections:[ids[1]]});
   assert.equal(b.rows('Ballots').length,2);assert.deepEqual(b.call(b.member,'load').ballot2,[ids[0]]);assert.deepEqual(b.call(b.member,'load').ballot3,[ids[1]]);
   assert.throws(()=>b.edit(ids[1],{finalist:false}),/已有最終票/);
+});
+
+test('admin recorded counts upsert per place and round while preserving online ballots and anonymous totals',()=>{
+  const b=backend(),ids=seedFinalists(b);
+  b.call(b.member,'vote',{round:2,selections:[ids[0]]});
+  const recorded=(round,id,votes)=>b.call(b.admin,'saveManualVotes',{round,id,votes});
+  let data=recorded(2,ids[0],'7');
+  assert.equal(data.results.primary.ranking[0].votes,8);
+  assert.equal(data.results.primary.ranking[0].onlineVotes,1);
+  assert.equal(data.results.primary.ranking[0].manualVotes,7);
+  assert.deepEqual(b.call(b.member,'load').ballot2,[ids[0]]);
+  data=recorded(2,ids[0],3);assert.equal(data.results.primary.ranking[0].votes,4);assert.equal(b.rows('ManualVotes').length,1);
+  const old=b.config().revision;recorded(2,ids[1],5);
+  assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:2,id:ids[0],votes:2},old),/已更新/);
+  b.edit(ids[0],{notes:'卡片編輯仍保留登記票數'});assert.equal(b.call(b.admin,'load').results.primary.manualTotal,8);
+  b.transition(3);data=recorded(3,ids[0],2);
+  assert.equal(data.results.final.ranking[0].votes,2);assert.equal(data.results.primary.manualTotal,8);
+  assert.throws(()=>b.edit(ids[0],{finalist:false}),/已有最終票/);
+  b.transition(4);data=b.call(b.member,'load');
+  assert.equal(data.results.final.manualTotal,2);assert.equal(data.results.primary.manualTotal,8);
+  assert.ok(!JSON.stringify(data.results).includes('admin@example.com'));
+  const audit=JSON.parse(b.rows('Audit').filter(r=>r[2]==='saveManualVotes')[1][3]);
+  assert.equal(audit.previousVotes,7);assert.equal(audit.votes,3);
+});
+
+test('recorded votes enforce admin, stage, round, eligibility and integer validation; old surveys migrate on first save',()=>{
+  const b=backend();b.dropTable('ManualVotes');b.add(b.member);b.add(b.other);b.transition(2);
+  const ids=b.call(b.admin,'load').places.map(p=>p.id);assert.equal(b.call(b.admin,'load').results.primary.manualTotal,0);
+  assert.throws(()=>b.call('', 'saveManualVotes',{}),/先登入/);
+  assert.throws(()=>b.call(b.member,'saveManualVotes',{round:2,id:ids[0],votes:1}),/管理員/);
+  for(const votes of [-1,1.5,'',null,true,'1e2',1000001])assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:2,id:ids[0],votes}),/整數/);
+  assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:3,id:ids[0],votes:1}),/輪次/);
+  assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:2,id:'missing',votes:1}),/不存在/);
+  b.call(b.admin,'saveManualVotes',{round:2,id:ids[0],votes:4});assert.equal(b.rows('ManualVotes').length,1);
+  b.transition(1);assert.throws(()=>b.call(b.member,'deletePlace',{id:ids[0]}),/已有選票/);
+  assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:1,id:ids[0],votes:1}),/階段/);
+  b.transition(2);b.call(b.admin,'saveManualVotes',{round:2,id:ids[0],votes:0});assert.equal(b.call(b.admin,'load').results.primary.manualTotal,0);
+  b.edit(ids[0],{finalist:true});b.transition(3);
+  assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:3,id:ids[1],votes:1}),/未入圍/);
+  b.transition(4);assert.throws(()=>b.call(b.admin,'saveManualVotes',{round:3,id:ids[0],votes:1}),/階段/);
 });
 
 test('lowering limits cannot silently invalidate existing ballots',()=>{
