@@ -161,10 +161,29 @@ test('OAuth code exchange validates server identity, nonce expiry/reuse and allo
   assert.throws(()=>b.api({action:'login',challenge:first,code:'google-code'}),/過期/);
   identity.email='not-allowed@example.com';assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/沒有填寫權限/);
   identity.email='member@example.com';identity.email_verified=false;assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/已驗證/);
-  identity.email_verified=true;identity.hd='';assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/Workspace/);
+  identity.email_verified=true;identity.hd='';assert.equal(b.api({action:'login',challenge:challenge(),code:'code'}).data.person.email,'member@example.com');
   identity.hd='example.com';identity.sub='changed-sub';assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/身分已變更/);
-  b.setProperty('GOOGLE_WORKSPACE_DOMAIN','other.com');assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/指定公司/);
+  identity.sub='member-sub';b.setProperty('GOOGLE_WORKSPACE_DOMAIN','legacy-company.com');assert.equal(b.api({action:'login',challenge:challenge(),code:'code'}).data.person.email,'member@example.com');
   b.call(login.session,'logout');assert.throws(()=>b.call(login.session,'load'),/過期/);
+});
+
+test('public login preparation exposes no survey data; Google accounts from other domains remain subject to the roster',()=>{
+  const b=backend();b.setProperty('GOOGLE_CLIENT_ID','client.apps.googleusercontent.com');b.setProperty('GOOGLE_CLIENT_SECRET','private-secret');
+  const boot=b.api({action:'bootstrap'});assert.deepEqual(Object.keys(boot).sort(),['clientId','ready','title']);assert.equal(boot.ready,true);assert.equal(JSON.stringify(boot).includes('private-secret'),false);
+  const challenge=()=>b.api({action:'loginBegin'}).challenge;
+  assert.throws(()=>b.api({action:'load',email:'admin@example.com'}),/先登入/);
+  assert.throws(()=>b.api({action:'saveUser',email:'admin@example.com',value:{email:'intruder@gmail.com',role:'admin',active:true}}),/先登入/);
+  let identity={email:'allowed@gmail.com',email_verified:true,sub:'gmail-sub'};
+  b.setFetch(url=>({getResponseCode:()=>200,getContentText:()=>JSON.stringify(url.endsWith('/token')?{access_token:'google-access'}:identity)}));
+  b.call(b.admin,'saveUser',{email:identity.email,name:'Gmail 同事',department:'',role:'member',active:true});
+  assert.equal(b.api({action:'login',challenge:challenge(),code:'code'}).data.person.role,'member');
+  identity={email:'other@example.com',email_verified:true,hd:'external-company.example',sub:'other-sub'};
+  assert.equal(b.api({action:'login',challenge:challenge(),code:'code'}).data.person.email,'other@example.com');
+  identity={email:'unknown@gmail.com',email_verified:true,sub:'unknown-sub'};
+  assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/沒有填寫權限/);
+  identity={email:'allowed@gmail.com',email_verified:true,sub:'gmail-sub'};
+  b.call(b.admin,'saveUser',{email:identity.email,name:'Gmail 同事',department:'',role:'member',active:false});
+  assert.throws(()=>b.api({action:'login',challenge:challenge(),code:'code'}),/沒有填寫權限/);
 });
 
 test('bridge authenticates origin, source and channel before calling the public API',()=>{
