@@ -26,10 +26,11 @@ const TABLES_ = {
   Places: ['id','name','description','budgetMin','budgetMax','days','transport','stay','highlights','intensity','notes','referenceUrl','createdBy','createdAt','finalist'],
   UnavailableWeeks: ['id','email','weekStart','note','updatedAt'],
   Ballots: ['email','round','selections','updatedAt'],
+  ManualVotes: ['placeId','round','votes','updatedBy','updatedAt'],
   Attractions: ['id','email','name','description','url','createdAt'],
   Audit: ['id','actor','action','detail','createdAt']
 };
-const ACTIONS_ = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
+const ACTIONS_ = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveManualVotes','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
 
 // Run from the editor after adding scopes. This does not read or change survey data.
 function authorizeServices() {
@@ -211,6 +212,7 @@ function api(request) {
       case 'saveUnavailable': saveUnavailable_(user,value,config); break;
       case 'deleteUnavailable': deleteUnavailable_(user,value,config); break;
       case 'vote': vote_(user,value,config); break;
+      case 'saveManualVotes': admin_(user); saveManualVotes_(user,value,config); break;
       case 'saveSettings': admin_(user); saveSettings_(user,value,config); break;
       case 'editPlace': admin_(user); editPlace_(user,value,config); break;
       case 'saveUser': admin_(user); saveUser_(user,value); break;
@@ -251,7 +253,32 @@ function ballot_(email,round) {
 function summary_(places,round,active) {
   const byEmail = new Map();
   rows_('Ballots').filter(r => Number(r[1]) === round && active.has(String(r[0]))).forEach(r => byEmail.set(String(r[0]),JSON.parse(r[2]||'[]')));
-  return {round,voters:byEmail.size,total:active.size,ranking:places.map(p => ({id:p.id,name:p.name,votes:[...byEmail.values()].filter(ids => ids.includes(p.id)).length})).sort((a,b) => b.votes-a.votes || a.name.localeCompare(b.name))};
+  const recorded = new Map(manualVotes_().filter(r => Number(r[1]) === round).map(r => [String(r[0]),integer_(r[2],0,1000000,'登記票數')]));
+  const ranking = places.map(p => {
+    const onlineVotes = [...byEmail.values()].filter(ids => ids.includes(p.id)).length, manualVotes = recorded.get(p.id)||0;
+    return {id:p.id,name:p.name,onlineVotes,manualVotes,votes:onlineVotes+manualVotes};
+  }).sort((a,b) => b.votes-a.votes || a.name.localeCompare(b.name));
+  return {round,voters:byEmail.size,total:active.size,manualTotal:ranking.reduce((sum,p)=>sum+p.manualVotes,0),ranking};
+}
+// Existing surveys do not need reinitialization; create the new table on the first authorized save.
+function manualVotes_() { return spreadsheet_().getSheetByName('ManualVotes') ? rows_('ManualVotes') : []; }
+function saveManualVotes_(user,v,c) {
+  stage_(c,[2,3]);
+  if (Number(v.round) !== c.stage) throw new Error('登記票數輪次不符。');
+  const place = rows_('Places').map(place_).find(p => p.id === v.id && (c.stage === 2 || p.finalist));
+  if (!place) throw new Error('地點未入圍或不存在。');
+  if (!['string','number'].includes(typeof v.votes) || !/^\d+$/.test(String(v.votes))) throw new Error('登記票數須為非負整數。');
+  const votes = integer_(v.votes,0,1000000,'登記票數');
+  const sheet = spreadsheet_().getSheetByName('ManualVotes') || spreadsheet_().insertSheet('ManualVotes');
+  if (!sheet.getLastRow()) { sheet.appendRow(TABLES_.ManualVotes); sheet.setFrozenRows(1); }
+  const header = sheet.getRange(1,1,1,TABLES_.ManualVotes.length).getValues()[0];
+  if (header.some((value,i) => value !== TABLES_.ManualVotes[i])) throw new Error('ManualVotes 表頭不符，請聯絡管理員。');
+  const rows = manualVotes_(), matches = rows.map((row,index)=>({row,index})).filter(({row})=>row[0] === v.id && Number(row[1]) === c.stage);
+  if (matches.length > 1) throw new Error('登記票數資料重複，請聯絡管理員。');
+  const old = matches[0], row = [v.id,c.stage,votes,user.email,now_()];
+  if (old) write_('ManualVotes',old.index,row); else append_('ManualVotes',row);
+  setting_('REVISION',c.revision+1);
+  audit_(user,'saveManualVotes',{id:v.id,round:c.stage,previousVotes:old ? Number(old.row[2]) : 0,votes});
 }
 function load_(user) {
   const config = config_(), placeRows = rows_('Places'), places = placeRows.map(place_);
@@ -278,7 +305,7 @@ function deletePlace_(user,v,c) {
   if (index < 0) throw new Error('提案已移除或不存在，請重新讀取。');
   const place = rows[index];
   if (place[12] !== user.email && user.role !== 'admin') throw new Error('只能移除自己的旅遊提案。');
-  if (c.finalPlace === v.id || rows_('Ballots').some(row => JSON.parse(row[2]||'[]').includes(v.id))) {
+  if (c.finalPlace === v.id || rows_('Ballots').some(row => JSON.parse(row[2]||'[]').includes(v.id)) || manualVotes_().some(row => row[0] === v.id && Number(row[2]) > 0)) {
     throw new Error('此提案已有選票或已選定為目的地，不能移除。');
   }
   remove_('Places',index);
@@ -339,7 +366,7 @@ function editPlace_(user,v,c) {
   const min = budget(v.budgetMin), max = budget(v.budgetMax);
   if ((min === '') !== (max === '') || (min !== '' && min > max)) throw new Error('請填寫完整預算範圍，最高預算須大於最低預算。');
   const finalist = v.finalist === true;
-  if (truth_(old[14]) && !finalist && rows_('Ballots').some(r => Number(r[1]) === 3 && JSON.parse(r[2]||'[]').includes(v.id))) throw new Error('此地點已有最終票，不能取消入圍。');
+  if (truth_(old[14]) && !finalist && (rows_('Ballots').some(r => Number(r[1]) === 3 && JSON.parse(r[2]||'[]').includes(v.id)) || manualVotes_().some(r => r[0] === v.id && Number(r[1]) === 3 && Number(r[2]) > 0))) throw new Error('此地點已有最終票，不能取消入圍。');
   const row = [old[0],safe_(name),safe_(text_(v.description,600,'簡介',true)),min,max,safe_(text_(v.days,80,'行程天數')),safe_(text_(v.transport,300,'交通')),safe_(text_(v.stay,300,'住宿')),safe_(text_(v.highlights,600,'活動亮點')),safe_(text_(v.intensity,200,'步行強度')),safe_(text_(v.notes,600,'注意事項')),link_(v.referenceUrl),old[12],old[13],finalist];
   write_('Places',i,row); setting_('REVISION',c.revision+1); audit_(user,'editPlace',{id:v.id,name});
 }

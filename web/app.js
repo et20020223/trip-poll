@@ -54,7 +54,16 @@ function placeCard(p,selectable=false,selected=false) {
   if(data.config.stage===1&&(data.ownPlaceIds.includes(p.id)||data.person.role==='admin'))controls.append(button('移除提案',async()=>{if(await ask(`移除「${p.name}」這個旅遊提案？移除後可重新新增提案。`))mutate('deletePlace',{id:p.id},'旅遊提案已移除。');},'quiet small'));
   if(selectable){const label=el('label',undefined,'vote-choice');const input=el('input');input.type='checkbox';input.name='choice';input.value=p.id;input.checked=selected;input.addEventListener('change',()=>{card.classList.toggle('selected',input.checked);updateVoteCount();});label.append(input,el('span','想去這裡'));controls.append(label);card.classList.toggle('selected',selected);}
   if(data.person.role==='admin'&&[2,3].includes(data.config.stage))controls.append(button('編輯卡片',()=>openEdit(p),'quiet small'));
-  if(controls.children.length)card.append(controls);return card;
+  if(controls.children.length)card.append(controls);
+  if(data.person.role==='admin'&&[2,3].includes(data.config.stage)&&(data.config.stage===2||p.finalist)) {
+    const round=data.config.stage,stats=(round===2?data.results.primary:data.results.final).ranking.find(r=>r.id===p.id);
+    const entry=el('div',undefined,'manual-vote-entry');entry.append(el('p',`線上 ${stats?.onlineVotes??stats?.votes??0} 票 ＋ 登記 ${stats?.manualVotes??0} 票 ＝ 合計 ${stats?.votes??0} 票`,'vote-summary'));
+    const input=field(entry,'manualVotes',`管理員登記票數（${round===2?'初選':'決選'}）`,'number',stats?.manualVotes??0,true);input.min=0;input.max=1000000;input.step=1;
+    entry.append(button('儲存登記票數',()=>{if(input.reportValidity())mutate('saveManualVotes',{id:p.id,round,votes:input.value},'登記票數已儲存，統計已更新。');},'quiet small'));
+    input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(input.reportValidity())mutate('saveManualVotes',{id:p.id,round,votes:input.value},'登記票數已儲存，統計已更新。');}});
+    entry.append(el('p','填入本輪額外登記的票數；再次儲存會取代先前登記值。請勿重複登記已在線上投出的票。','hint'));card.append(entry);
+  }
+  return card;
 }
 function renderProposals() {
   const view=$('#view'), count=data.ownPlaceIds.length;
@@ -90,7 +99,7 @@ function finalAnnouncement() {
   const p=data.places.find(p=>p.id===data.config.finalPlace),banner=el('section',undefined,'final-banner');banner.append(el('span','OUR NEXT DESTINATION','eyebrow'),el('h2',p?.name||'等待管理員確認目的地'),el('p',data.config.finalStart?`${data.config.finalStart} — ${data.config.finalEnd}`:'出遊日期尚未公布'));return banner;
 }
 function ranking(result,title) {
-  const panel=el('section',undefined,'panel');panel.append(heading(title,`${result.voters} / ${result.total} 人有投票紀錄 · 每票為一位同事的地點選擇`));
+  const panel=el('section',undefined,'panel');panel.append(heading(title,`${result.voters} / ${result.total} 人有線上投票紀錄 · 另有 ${result.manualTotal??0} 票由管理員登記，已計入得票數`));
   if(!result.ranking.length)panel.append(el('p','尚無候選地點。','empty'));
   const max=Math.max(1,...result.ranking.map(p=>p.votes));result.ranking.forEach((p,i)=>{const row=el('div',undefined,'ranking-row');row.append(el('span',String(i+1).padStart(2,'0'),'rank-index'),el('strong',p.name),el('span',p.votes+' 票','votes'));const progress=el('div',undefined,'progress');const fill=el('span');fill.style.width=(p.votes/max*100)+'%';progress.append(fill);panel.append(row,progress);});return panel;
 }
@@ -139,7 +148,7 @@ async function prepareLogin() {
 }
 async function init() {
   $('#mode').textContent=demo?'本機示範':'員工旅遊';$('#demo-banner').hidden=!demo;
-  if(demo){const {createDemoService}=await import('./demo.js?v=5');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
+  if(demo){const {createDemoService}=await import('./demo.js?v=6');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
   else {try{service=createTransport(window.TRIP_CONFIG.appsScriptUrl);await prepareLogin();}catch(e){status(e.message,'error');$('#login-hint').textContent=e.message;}}
 }
 init();
