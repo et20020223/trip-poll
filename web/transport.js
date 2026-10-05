@@ -11,7 +11,7 @@ export function createTransport(endpoint) {
   const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
   // A rejected readiness promise may precede the first user request.
   ready.catch(() => {});
-  const readinessTimeout = setTimeout(() => rejectReady(new Error('無法連接調查服務。請確認已登入公司 Google 帳號，或聯絡負責人檢查部署存取權。')), 25000);
+  const readinessTimeout = setTimeout(() => rejectReady(new Error('無法連接調查服務。請重新整理；若仍失敗，請聯絡負責人檢查 Apps Script 部署網址及存取設定。')), 25000);
   window.addEventListener('message', event => {
     const m = event.data;
     const trustedOrigin = /^https:\/\/(?:script|[a-z0-9-]+-script)\.googleusercontent\.com$/.test(event.origin);

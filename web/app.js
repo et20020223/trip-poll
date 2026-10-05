@@ -1,4 +1,4 @@
-import {createTransport} from './transport.js';
+import {createTransport} from './transport.js?v=5';
 const $ = s => document.querySelector(s);
 const demo = !window.TRIP_CONFIG?.appsScriptUrl;
 const stages = ['地點提案','第一輪初選','最終決選','結果與日期','景點募集'];
@@ -139,7 +139,7 @@ async function prepareLogin() {
 }
 async function init() {
   $('#mode').textContent=demo?'本機示範':'員工旅遊';$('#demo-banner').hidden=!demo;
-  if(demo){const {createDemoService}=await import('./demo.js?v=4');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
+  if(demo){const {createDemoService}=await import('./demo.js?v=5');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
   else {try{service=createTransport(window.TRIP_CONFIG.appsScriptUrl);await prepareLogin();}catch(e){status(e.message,'error');$('#login-hint').textContent=e.message;}}
 }
 init();

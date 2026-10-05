@@ -137,7 +137,7 @@ function oauth_() {
   const p = PropertiesService.getScriptProperties();
   const clientId = p.getProperty('GOOGLE_CLIENT_ID'), secret = p.getProperty('GOOGLE_CLIENT_SECRET');
   if (!clientId || !secret) throw new Error('管理員尚未完成 Google 登入設定。');
-  return {clientId,secret,domain:p.getProperty('GOOGLE_WORKSPACE_DOMAIN')||''};
+  return {clientId,secret};
 }
 function publicBootstrap_() {
   const p = PropertiesService.getScriptProperties();
@@ -166,9 +166,8 @@ function login_(request) {
   const identity = JSON.parse(identityResponse.getContentText());
   if (identity.email_verified !== true || typeof identity.sub !== 'string' || !identity.sub) throw new Error('需要已驗證的 Google Email。');
   const email = email_(identity.email);
-  // Google is authoritative for Gmail and Workspace email. Reject third-party aliases.
-  if (!email.endsWith('@gmail.com') && !identity.hd) throw new Error('請使用 Google Workspace 公司帳號或 Gmail 帳號。');
-  if (oauth.domain && identity.hd !== oauth.domain) throw new Error('請使用指定公司的 Google Workspace 帳號。');
+  // Identity comes from Google's authenticated UserInfo endpoint, never client input.
+  // Access and role still come from the enabled Users row, bound to Google's stable sub.
   const user = userByEmail_(email);
   if (user.googleSub && user.googleSub !== identity.sub) throw new Error('帳號身分已變更，請聯絡管理員。');
   if (!user.googleSub) { const row = rows_('Users')[user.index]; row[5] = identity.sub; write_('Users',user.index,row); }
