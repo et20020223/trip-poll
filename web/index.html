@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<meta name="description" content="一起決定員工旅遊：提案、初選、決選、出發與景點募集。">
+<title>一起出發｜員工旅遊</title><link rel="stylesheet" href="./styles.css"><script src="./config.js" defer></script><script type="module" src="./app.js?v=4"></script>
+</head><body>
+<header class="topbar"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">↗</span><span>一起出發<small>OUR NEXT CHAPTER</small></span></a><div class="header-actions"><span id="mode" class="pill">員工旅遊</span><button id="logout" class="quiet" hidden>登出</button></div></header>
+<main>
+<div id="demo-banner" class="notice" hidden>本機操作示範 · 示範登入沒有 Google 身分驗證，資料只在記憶體內，重新整理即清除。</div>
+<div id="status" role="status" aria-live="polite"></div>
+<section id="login" class="login-layout">
+<div class="login-copy"><p class="eyebrow">A LITTLE FURTHER, TOGETHER</p><h1>下一站，<br>由我們一起決定。</h1><p class="lead">把想去的地方說出來，<br>留出能一起出發的時間。</p><div class="journey-art" aria-hidden="true"><div class="orbit"></div><span class="art-sun"></span><span class="mountain one"></span><span class="mountain two"></span><span class="route-label">LET’S GO ↗</span></div></div>
+<div class="panel login-panel"><span class="eyebrow">員工專屬</span><h2>登入旅遊調查</h2><p>使用名單內的 Google 帳號登入，<br>查看目前階段與自己的填寫紀錄。</p><button id="google-login" class="primary wide" disabled>使用 Google 帳號登入</button><div id="demo-login-area" hidden><label for="demo-account">選擇示範角色</label><select id="demo-account"><option value="preview.member@example.com">示範同事 · 一般員工</option><option value="willy.chen@insighteye.tw">Willy Chen · 管理員</option><option value="preview.other@example.com">另一位示範同事 · 一般員工</option></select><button id="demo-login" class="primary wide">進入操作示範</button></div><p id="login-hint" class="hint">正在準備登入服務…</p><div class="login-footer">只有名單內且已啟用的帳號可以填寫。<br>如需加入名單，請聯絡旅遊負責人。</div></div>
+</section>
+<section id="workspace" hidden>
+<div class="hero"><div><p class="eyebrow">TEAM TRIP · 2026—2027</p><h1 id="title">員工旅遊意願調查</h1><p id="stage-description" class="lead"></p></div><div class="identity"><span id="person-name"></span><small id="person-email"></small><span id="role" class="pill"></span></div></div>
+<nav id="stage-track" class="stage-track" aria-label="調查進度"></nav>
+<div id="announcement" class="announcement" hidden></div>
+<nav class="tabs" aria-label="功能"><button id="tab-survey" class="active">旅遊調查</button><button id="tab-dates">我的日期</button><button id="tab-admin" hidden>管理後台</button><button id="refresh" class="refresh">↻ 重新讀取</button></nav>
+<div id="view"></div>
+</section>
+<footer>一起出發 · 個別投票紀錄僅保存在管理用試算表 · 行程依最終公告為準</footer>
+</main>
+<dialog id="edit-dialog"><div class="dialog-head"><h2>編輯地點卡片</h2><button id="close-dialog" class="quiet" aria-label="關閉編輯視窗">✕</button></div><form id="edit-form"><div id="edit-fields" class="form-grid"></div><div class="actions"><button type="submit" class="primary">儲存卡片</button></div></form></dialog>
+<dialog id="confirm-dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-message"></p><div class="confirm-actions"><button id="confirm-cancel" class="quiet">取消</button><button id="confirm-accept" class="primary">確定</button></div></dialog>
+</body></html>
