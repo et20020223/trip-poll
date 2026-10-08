@@ -3,7 +3,7 @@
 const channel = <?!= channelJson ?>;
 const parentOrigin = <?!= originJson ?>;
 const protocol = 'trip-poll-v2';
-const actions = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
+const actions = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveManualVotes','saveAttractionRating','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
 function send(message) { window.top.postMessage({protocol,channel,...message},parentOrigin); }
 window.addEventListener('message',event => {
   const m = event.data;
