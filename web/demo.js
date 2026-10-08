@@ -231,7 +231,7 @@ function date_(value) {
   return date;
 }
 function weeks_(year) {
-  const start = new Date(Date.UTC(year,11,1)), end = new Date(Date.UTC(year+1,2,0));
+  const start = new Date(Date.UTC(year,10,1)), end = new Date(Date.UTC(year+1,2,0));
   const first = new Date(start); first.setUTCDate(first.getUTCDate()-((first.getUTCDay()+3)%7));
   const result = [];
   for (let d = first; d <= end; d = new Date(d.getTime()+7*86400000)) {
@@ -351,7 +351,7 @@ function saveSettings_(user,v,c) {
   if (finalStart) {
     const start = date_(finalStart), end = date_(finalEnd);
     const weeks = weeks_(c.year);
-    if (!weeks.some(w => finalStart >= w.start && finalEnd <= w.end && finalStart <= finalEnd)) throw new Error('出遊日期需位於同一個星期四至星期二的候選週內。');
+    if (!weeks.some(w => finalStart >= w.start && finalEnd <= w.end && finalStart <= finalEnd)) throw new Error(`請選擇 ${c.year}/11 至 ${c.year+1}/02 的候選週；出發與返回日期需位於同一個星期四至星期二週次，跨月採完整週次。`);
     if (end < start) throw new Error('返回日期須晚於出發日期。');
   }
   if (c.stage < 4 && (finalPlace || finalStart)) throw new Error('第四階段才可公告最終地點與日期，請先切換階段。');

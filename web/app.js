@@ -91,7 +91,7 @@ function renderVoting() {
 function updateVoteCount() { const count=document.querySelectorAll('[name="choice"]:checked').length,limit=data.config.stage===2?data.config.voteLimit2:data.config.voteLimit3;$('#vote-tally').textContent=`已選 ${count} / ${limit} 票`+(count>limit?' · 請減少勾選':'');$('#vote-tally').classList.toggle('error',count>limit);$('#vote-submit').disabled=count>limit||busy; }
 function renderDates() {
   const view=$('#view'),editable=[1,2,3].includes(data.config.stage);
-  view.append(heading('哪些週次不方便？',`${data.config.year}/12 至 ${data.config.year+1}/02，每週星期四到下一週星期二，共六天；星期三不在週次內。跨月邊界會顯示完整週次。`));
+  view.append(heading('哪些週次不方便？',`${data.config.year}/11 至 ${data.config.year+1}/02，每週星期四到下一週星期二，共六天；星期三不在週次內。跨月邊界會顯示完整週次。`));
   const layout=el('div',undefined,'dates-layout'),panel=el('section',undefined,'panel');panel.append(heading(editable?'新增不方便的週':'日期填寫已結束',editable?'沒有筆數上限，同一週會更新備註。':''));
   if(editable){const form=el('form');const picker=field(form,'date','選擇週內任一天','date','',true);picker.min=data.weeks[0].start;picker.max=data.weeks.at(-1).end;const selected=el('p','請選擇星期四至星期二的日期。','selected-week');const hidden=el('input');hidden.type='hidden';hidden.name='weekStart';form.append(hidden,selected);const note=field(form,'note','備註（選填）','textarea','',false,500);
     picker.addEventListener('change',()=>{const w=data.weeks.find(w=>picker.value>=w.start&&picker.value<=w.end);hidden.value=w?.start||'';selected.textContent=w?'整週不方便：'+weekLabel(w):'星期三不在候選週內，請選擇其他日期。';picker.setCustomValidity(w?'':'請選擇星期四至星期二。');if(w)note.value=data.unavailable.find(r=>r.weekStart===w.start)?.note||'';});
