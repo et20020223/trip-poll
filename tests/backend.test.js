@@ -76,7 +76,7 @@ test('proposal deletion enforces ownership, frees quota and preserves recorded v
 
 test('week generator handles year boundaries, leap years and Wednesday gaps; own records only',()=>{
   const b=backend(),weeks=JSON.parse(JSON.stringify(b.weeks(2026)));
-  assert.equal(weeks[0].start,'2026-11-26');assert.equal(weeks[0].end,'2026-12-01');assert.equal(weeks.at(-1).end,'2027-03-02');
+  assert.equal(weeks[0].start,'2026-10-29');assert.equal(weeks[0].end,'2026-11-03');assert.equal(weeks.at(-1).end,'2027-03-02');
   for(const w of weeks){assert.equal(new Date(w.start).getUTCDay(),4);assert.equal(new Date(w.end).getUTCDay(),2);assert.equal((new Date(w.end)-new Date(w.start))/86400000,5);b.call(b.member,'saveUnavailable',{weekStart:w.start,note:'無法'});}
   assert.equal(b.call(b.member,'load').unavailable.length,weeks.length);
   b.call(b.member,'saveUnavailable',{weekStart:weeks[0].start,note:'更新備註'});
@@ -305,4 +305,22 @@ test('legacy surveys create rating table on first save and correctly update rows
   b.sheet('AttractionRatings').appendRow(['member@example.com',ids[1],3,'']);
   assert.throws(()=>b.call(b.member,'saveAttractionRating',{id:ids[1],score:1}),/資料重複/);
   assert.equal(b.call(b.admin,'load').attractionResults.ranking.find(a=>a.id===ids[1]).ratedCount,1);
+});
+
+
+test('November candidate weeks support unavailability and final dates while preserving prior records',()=>{
+  const b=backend(), [id]=seedFinalists(b);
+  b.call(b.member,'saveUnavailable',{weekStart:'2026-12-03',note:'原有紀錄'});
+  b.call(b.member,'saveUnavailable',{weekStart:'2026-11-12',note:'十一月不方便'});
+  const data=b.call(b.member,'load');
+  assert.ok(data.weeks.some(w=>w.start==='2026-11-12'&&w.end==='2026-11-17'));
+  assert.equal(data.unavailable.length,2);
+  assert.equal(data.unavailable.find(r=>r.weekStart==='2026-12-03').note,'原有紀錄');
+  b.transition(4);
+  b.transition(4,{finalPlace:id,finalStart:'2026-11-12',finalEnd:'2026-11-17'});
+  assert.equal(b.config().finalStart,'2026-11-12');
+  assert.equal(b.config().finalEnd,'2026-11-17');
+  for(const [start,end] of [['2026-10-22','2026-10-27'],['2026-11-18','2026-11-19'],['2026-11-12','2026-11-19']]){
+    assert.throws(()=>b.transition(4,{finalPlace:id,finalStart:start,finalEnd:end}),/2026\/11 至 2027\/02.*候選週/);
+  }
 });
