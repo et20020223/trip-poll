@@ -19,7 +19,11 @@ function field(form,name,label,type='text',value='',required=false,max=600) {
 }
 function select(form,name,label,options,value) { const wrap=el('label',undefined,'field');wrap.append(el('span',label));const input=el('select');input.name=name;options.forEach(([id,text])=>{const o=el('option',text);o.value=id;input.append(o);});input.value=value;wrap.append(input);form.append(wrap);return input; }
 function values(form) { return Object.fromEntries(new FormData(form)); }
-function budget(p) { return p.budgetMin === null ? '預算待確認' : '約 NT$ '+p.budgetMin.toLocaleString()+'–'+p.budgetMax.toLocaleString()+' / 人'; }
+function budget(p) {
+  const min=p.budgetMin,max=p.budgetMax;
+  if(!Number.isFinite(min)||!Number.isFinite(max)||min<0||max<min)return '預算待確認';
+  return '約 NT$ '+min.toLocaleString('zh-TW')+'–'+max.toLocaleString('zh-TW')+' / 人';
+}
 function weekLabel(w) { return `${w.start.slice(5).replace('-','/')}（四）— ${w.end.slice(5).replace('-','/')}（二）`; }
 async function api(action,value={}) { return service({action,value,session,revision:data?.config.revision}); }
 async function mutate(action,value,message='已儲存。') {
