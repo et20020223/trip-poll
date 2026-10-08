@@ -234,6 +234,10 @@ test('bridge authenticates origin, source and channel before calling the public 
   const m={protocol:'trip-poll-v2',channel:'a'.repeat(32),type:'request',id:'1',request:{action:'load'}};
   listener({source:top,origin:'https://evil.invalid',data:m});listener({source:{},origin:'https://example.github.io',data:m});listener({source:top,origin:'https://example.github.io',data:{...m,channel:'bad'}});assert.equal(requests,0);
   listener({source:top,origin:'https://example.github.io',data:m});assert.equal(requests,1);
+  const sourceCode=readFileSync(new URL('../apps-script/Code.gs',import.meta.url),'utf8');
+  const actions=vm.runInNewContext(sourceCode.match(/const ACTIONS_ = (\[[\s\S]*?\]);/)[1]);
+  for(const action of actions){const before=requests;listener({source:top,origin:'https://example.github.io',data:{...m,request:{action}}});assert.equal(requests,before+1,action+' must reach server authorization');}
+  const before=requests;listener({source:top,origin:'https://example.github.io',data:{...m,request:{action:'unknown'}}});assert.equal(requests,before);
 });
 
 function seedAttractions(b) {
