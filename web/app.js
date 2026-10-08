@@ -1,8 +1,9 @@
 import {createTransport} from './transport.js?v=5';
 const $ = s => document.querySelector(s);
 const demo = !window.TRIP_CONFIG?.appsScriptUrl;
-const stages = ['地點提案','第一輪初選','最終決選','結果與日期','景點募集'];
-const descriptions = ['每人最多提案三個地點，也把不方便的週次留給我們。','看看大家的提案，選出你最想一起去的地方。','從入圍名單中，投下最後的選擇。','票選結果已公布，準備把出遊時間空下來。','目的地已確認，一起把值得去的景點加進行程。'];
+const stages = ['地點提案','第一輪初選','最終決選','結果與日期','景點募集','景點評分'];
+const descriptions = ['每人最多提案三個地點，也把不方便的週次留給我們。','看看大家的提案，選出你最想一起去的地方。','從入圍名單中，投下最後的選擇。','票選結果已公布，準備把出遊時間空下來。','目的地已確認，一起把值得去的景點加進行程。','替每個景點評 0～3 分，一起選出值得排進行程的地方。'];
+const attractionScoreLabels = ['0：不想去','1：沒特別興趣，但可以配合','2：想去','3：非常想去，希望排進行程'];
 let service, session = '', data, busy = false, tab = 'survey', loginClient;
 function el(tag,text,cls) { const n=document.createElement(tag); if(text!==undefined)n.textContent=text; if(cls)n.className=cls; return n; }
 function ask(message) { return new Promise(resolve=>{const dialog=$('#confirm-dialog');$('#confirm-message').textContent=message;const done=value=>{dialog.close();resolve(value);};$('#confirm-cancel').onclick=()=>done(false);$('#confirm-accept').onclick=()=>done(true);dialog.oncancel=e=>{e.preventDefault();done(false);};dialog.showModal();}); }
@@ -33,8 +34,8 @@ function render() {
   document.title=data.config.title;$('#title').textContent=data.config.title;
   $('#stage-description').textContent=descriptions[data.config.stage-1];
   $('#person-name').textContent=data.person.name;$('#person-email').textContent=data.person.email;$('#role').textContent=data.person.role==='admin'?'管理員':'員工';
-  $('#tab-admin').hidden=data.person.role!=='admin';$('#tab-dates').hidden=data.config.stage===5;
-  if(tab==='admin'&&data.person.role!=='admin'||tab==='dates'&&data.config.stage===5)tab='survey';
+  $('#tab-admin').hidden=data.person.role!=='admin';$('#tab-dates').hidden=data.config.stage>=5;
+  if(tab==='admin'&&data.person.role!=='admin'||tab==='dates'&&data.config.stage>=5)tab='survey';
   $('#stage-track').replaceChildren();stages.forEach((name,i)=>{const n=el('div',undefined,i+1===data.config.stage?'stage current':i+1<data.config.stage?'stage done':'stage');n.append(el('span',String(i+1),'stage-number'),el('span',name));if(i+1===data.config.stage)n.setAttribute('aria-current','step');$('#stage-track').append(n);});
   $('#announcement').hidden=!data.config.announcement;$('#announcement').textContent=data.config.announcement;
   ['survey','dates','admin'].forEach(t=>$('#tab-'+t).classList.toggle('active',tab===t));
@@ -43,7 +44,7 @@ function render() {
 }
 function renderSurvey() {
   const stage=data.config.stage;
-  if(stage===1)renderProposals();else if(stage===2||stage===3)renderVoting();else if(stage===4)renderResults();else renderAttractions();
+  if(stage===1)renderProposals();else if(stage===2||stage===3)renderVoting();else if(stage===4)renderResults();else if(stage===5)renderAttractions();else renderAttractionRatings();
 }
 function placeCard(p,selectable=false,selected=false) {
   const card=el('article',undefined,'place-card');
@@ -109,6 +110,22 @@ function renderAttractions() {
   const layout=el('div',undefined,'proposal-layout'),grid=el('div',undefined,'place-grid');data.attractions.forEach(a=>{const card=el('article',undefined,'place-card');card.append(el('span','景點推薦','pill'),el('h3',a.name),el('p',a.description));if(a.url){const link=el('a','查看景點 ↗','card-link');link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';card.append(link);}if(a.own||data.person.role==='admin')card.append(button('刪除推薦',async()=>{if(await ask('刪除這個景點推薦？'))mutate('deleteAttraction',{id:a.id});},'quiet small'));grid.append(card);});if(!data.attractions.length)grid.append(el('p','第一個推薦，等你分享。','empty'));
   const panel=el('section',undefined,'panel');panel.append(heading('新增想去的景點'));const form=el('form');field(form,'name','景點／店家名稱','text','',true,100);field(form,'description','推薦原因','textarea','',true,600);field(form,'url','參考連結（HTTPS，選填）','url','',false,1000);const b=el('button','新增景點 ＋','primary wide');b.type='submit';form.append(b);form.addEventListener('submit',e=>{e.preventDefault();mutate('addAttraction',values(form),'景點已新增。');});panel.append(form);layout.append(grid,panel);view.append(layout);
 }
+function attractionRanking() {
+  const result=data.attractionResults,panel=el('section',undefined,'panel attraction-ranking');
+  panel.append(heading('景點得分排行',`${result.participants} / ${result.totalEligible} 人已參與評分 · 依總分由高到低，同分並列；未評分不算 0 分。`));
+  if(!result.ranking.length){panel.append(el('p','第五階段尚未募集景點。','empty'));return panel;}
+  const list=el('ol',undefined,'score-ranking-list');
+  result.ranking.forEach(a=>{const row=el('li',undefined,'score-ranking-item'),top=el('div',undefined,'score-ranking-top');top.append(el('span',a.rank===null?'未評分':`第 ${a.rank} 名`,'pill'),el('strong',a.name),el('strong',`${a.totalScore} 分`,'score-total'));row.append(top,el('p',`平均 ${a.averageScore===null?'—':a.averageScore.toFixed(2)} 分 · ${a.ratedCount} 人已評分 · ${a.unratedCount} 人未評分`,'hint'));const dist=el('div',undefined,'score-distribution');a.distribution.forEach((count,score)=>dist.append(el('span',`${score} 分：${count} 人`)));row.append(dist);list.append(row);});panel.append(list);return panel;
+}
+function renderAttractionRatings() {
+  const view=$('#view');view.append(finalAnnouncement(),heading('第六階段：景點評分','每個景點選擇一個分數，再按儲存；可隨時重新評分，管理員也能參與。'));
+  const legend=el('div',undefined,'score-legend');attractionScoreLabels.forEach(label=>legend.append(el('span',label)));view.append(legend,attractionRanking());
+  const rated=new Set((data.ownAttractionRatings||[]).map(r=>r.id));view.append(heading('我的景點評分',`已評 ${rated.size} / ${data.attractions.length} 個景點 · 未選擇的景點保持未評分。`));
+  const grid=el('div',undefined,'place-grid');data.attractions.forEach(a=>{const card=el('article',undefined,'place-card');card.append(el('span',rated.has(a.id)?'已評分':'尚未評分','pill'),el('h3',a.name),el('p',a.description));if(a.url){const link=el('a','查看景點 ↗','card-link');link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';card.append(link);}
+    const form=el('form',undefined,'attraction-score-form'),own=(data.ownAttractionRatings||[]).find(r=>r.id===a.id);const input=select(form,'score','我的評分',[['','請選擇分數'],...attractionScoreLabels.map((label,i)=>[String(i),label])],own?String(own.score):'');input.required=true;
+    const save=el('button',own?'更新評分':'儲存評分','primary');save.type='submit';form.append(save);form.addEventListener('submit',e=>{e.preventDefault();mutate('saveAttractionRating',{id:a.id,score:input.value},'景點評分已儲存，排行已更新。');});card.append(form);grid.append(card);
+  });if(!data.attractions.length)grid.append(el('p','尚無可評分的景點，請聯絡管理員。','empty'));view.append(grid,el('p','排行只顯示分數統計，個別評分保存在管理用試算表。','hint bottom-hint'));
+}
 function renderAdmin() {
   const view=$('#view'),c=data.config;view.append(heading('管理後台','設定階段、票數、員工權限與出遊公告。管理員也能使用旅遊調查參與提案與投票。'));
   const layout=el('div',undefined,'admin-grid'),panel=el('section',undefined,'panel');panel.append(heading('調查設定'));
@@ -118,6 +135,7 @@ function renderAdmin() {
   const schedule=el('section',undefined,'panel');schedule.append(heading('日期限制統計','只代表已填寫不方便的人數，沒有紀錄不等於可以參加。'));data.weekSummary.forEach(w=>{const r=el('div',undefined,'date-stat');r.append(el('span',weekLabel(w)),el('strong',w.count+' 人不方便'));schedule.append(r);});layout.append(panel,schedule);view.append(layout);
   if([2,3].includes(c.stage)){view.append(heading('地點資料與入圍名單','編輯卡片可補充投票參考資訊，並勾選最終決選的入圍地點。'));const grid=el('div',undefined,'place-grid');data.places.forEach(p=>grid.append(placeCard(p)));view.append(grid);}
   const results=el('div',undefined,'results-grid');results.append(ranking(data.results.primary,'初選統計（管理員）'),ranking(data.results.final,'決選統計（管理員）'));view.append(results);
+  if(c.stage===6)view.append(attractionRanking());
   const users=el('section',undefined,'panel users-panel');users.append(heading('員工登入名單','一般員工只能操作自己的資料；管理員可以設定階段、編輯卡片與維護名單。'));
   const userForm=el('form',undefined,'form-grid');userForm.id='user-form';field(userForm,'email','Email','email','',true,254);field(userForm,'name','姓名','text','',true,80);field(userForm,'department','部門','text','',false,80);select(userForm,'role','角色',[['member','一般員工'],['admin','管理員']],'member');select(userForm,'active','帳號狀態',[['true','啟用'],['false','停用']],'true');const b=el('button','新增／更新員工','primary');b.type='submit';userForm.append(b);userForm.addEventListener('submit',e=>{e.preventDefault();const v=values(userForm);mutate('saveUser',{...v,active:v.active==='true'},'員工名單已更新。');});users.append(userForm);
   const scroll=el('div',undefined,'table-scroll'),table=el('table'),thead=el('thead'),hr=el('tr');['員工','Email','角色','狀態','操作'].forEach(t=>hr.append(el('th',t)));thead.append(hr);table.append(thead);const tbody=el('tbody');data.users.forEach(u=>{const row=el('tr');[u.name,u.email,u.role==='admin'?'管理員':'一般員工',u.active?'啟用':'停用'].forEach(t=>row.append(el('td',t)));const td=el('td');td.append(button('編輯',()=>{Object.entries(u).forEach(([k,v])=>{if(userForm.elements.namedItem(k))userForm.elements.namedItem(k).value=String(v);});userForm.scrollIntoView({behavior:'smooth',block:'center'});},'quiet small'));row.append(td);tbody.append(row);});table.append(tbody);scroll.append(table);users.append(scroll);view.append(users);
@@ -148,7 +166,7 @@ async function prepareLogin() {
 }
 async function init() {
   $('#mode').textContent=demo?'本機示範':'員工旅遊';$('#demo-banner').hidden=!demo;
-  if(demo){const {createDemoService}=await import('./demo.js?v=6');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
+  if(demo){const {createDemoService}=await import('./demo.js?v=7');window.demoService=createDemoService();service=window.demoService.request;$('#google-login').hidden=true;$('#demo-login-area').hidden=false;$('#login-hint').textContent='這裡只提供角色操作預覽，正式網站必須完成 Google 登入。';}
   else {try{service=createTransport(window.TRIP_CONFIG.appsScriptUrl);await prepareLogin();}catch(e){status(e.message,'error');$('#login-hint').textContent=e.message;}}
 }
 init();

@@ -28,9 +28,10 @@ const TABLES_ = {
   Ballots: ['email','round','selections','updatedAt'],
   ManualVotes: ['placeId','round','votes','updatedBy','updatedAt'],
   Attractions: ['id','email','name','description','url','createdAt'],
+  AttractionRatings: ['email','attractionId','score','updatedAt'],
   Audit: ['id','actor','action','detail','createdAt']
 };
-const ACTIONS_ = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveManualVotes','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction'];
+const ACTIONS_ = ['bootstrap','loginBegin','login','logout','load','addPlace','deletePlace','saveUnavailable','deleteUnavailable','vote','saveManualVotes','saveSettings','editPlace','saveUser','addAttraction','deleteAttraction','saveAttractionRating'];
 
 // Run from the editor after adding scopes. This does not read or change survey data.
 function authorizeServices() {
@@ -40,7 +41,7 @@ function authorizeServices() {
   ]);
 }
 function initializeSurvey() { authorizeServices(); SpreadsheetApp.getUi(); withLock_(() => setup_()); }
-function onOpen() { SpreadsheetApp.getUi().createMenu('旅遊調查').addItem('初始化五階段調查','initializeSurvey').addToUi(); }
+function onOpen() { SpreadsheetApp.getUi().createMenu('旅遊調查').addItem('初始化六階段調查','initializeSurvey').addToUi(); }
 function setup_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error('請從試算表的擴充功能開啟 Apps Script。');
@@ -218,6 +219,7 @@ function api(request) {
       case 'saveUser': admin_(user); saveUser_(user,value); break;
       case 'addAttraction': addAttraction_(user,value,config); break;
       case 'deleteAttraction': deleteAttraction_(user,value,config); break;
+      case 'saveAttractionRating': saveAttractionRating_(user,value,config); break;
     }
     SpreadsheetApp.flush(); return load_(user);
   });
@@ -240,7 +242,7 @@ function weeks_(year) {
 }
 function config_() {
   const s = settings_();
-  return {title:s.TITLE||'員工旅遊意願調查',stage:integer_(s.STAGE,1,5,'階段'),voteLimit2:integer_(s.VOTE_LIMIT_2,1,100,'第二階段票數'),voteLimit3:integer_(s.VOTE_LIMIT_3,1,100,'第三階段票數'),year:integer_(s.START_YEAR,2020,2100,'年度'),revision:integer_(s.REVISION,1,1e9,'版本'),finalPlace:s.FINAL_PLACE||'',finalStart:s.FINAL_START||'',finalEnd:s.FINAL_END||'',announcement:uns_(s.ANNOUNCEMENT||'')};
+  return {title:s.TITLE||'員工旅遊意願調查',stage:integer_(s.STAGE,1,6,'階段'),voteLimit2:integer_(s.VOTE_LIMIT_2,1,100,'第二階段票數'),voteLimit3:integer_(s.VOTE_LIMIT_3,1,100,'第三階段票數'),year:integer_(s.START_YEAR,2020,2100,'年度'),revision:integer_(s.REVISION,1,1e9,'版本'),finalPlace:s.FINAL_PLACE||'',finalStart:s.FINAL_START||'',finalEnd:s.FINAL_END||'',announcement:uns_(s.ANNOUNCEMENT||'')};
 }
 function place_(r) {
   return {id:String(r[0]),name:uns_(r[1]),description:uns_(r[2]),budgetMin:r[3] === '' ? null : Number(r[3]),budgetMax:r[4] === '' ? null : Number(r[4]),days:uns_(r[5]),transport:uns_(r[6]),stay:uns_(r[7]),highlights:uns_(r[8]),intensity:uns_(r[9]),notes:uns_(r[10]),referenceUrl:String(r[11]),finalist:truth_(r[14])};
@@ -287,8 +289,10 @@ function load_(user) {
   const unavailable = rows_('UnavailableWeeks');
   const weekSummary = weeks.map(w => ({...w,count:new Set(unavailable.filter(r => r[2] === w.start && active.has(String(r[1]))).map(r => String(r[1]))).size}));
   const ownUnavailable = unavailable.filter(r => r[1] === user.email).map(r => ({id:String(r[0]),weekStart:String(r[2]),note:uns_(r[3])}));
-  const result = {config,weeks,person:{email:user.email,name:user.name,department:user.department,role:user.role},places,ownPlaceIds:placeRows.filter(r => r[12] === user.email).map(r => String(r[0])),unavailable:ownUnavailable,ballot2:ballot_(user.email,2),ballot3:ballot_(user.email,3),weekSummary,results: config.stage >= 4 || user.role === 'admin' ? {primary:summary_(places,2,active),final:summary_(places.filter(p => p.finalist),3,active)} : null,attractions: config.stage === 5 ? rows_('Attractions').map(r => ({id:String(r[0]),name:uns_(r[2]),description:uns_(r[3]),url:String(r[4]),own:r[1] === user.email})) : []};
+  const result = {config,weeks,person:{email:user.email,name:user.name,department:user.department,role:user.role},places,ownPlaceIds:placeRows.filter(r => r[12] === user.email).map(r => String(r[0])),unavailable:ownUnavailable,ballot2:ballot_(user.email,2),ballot3:ballot_(user.email,3),weekSummary,results: config.stage >= 4 || user.role === 'admin' ? {primary:summary_(places,2,active),final:summary_(places.filter(p => p.finalist),3,active)} : null,attractions: config.stage >= 5 ? rows_('Attractions').map(r => ({id:String(r[0]),name:uns_(r[2]),description:uns_(r[3]),url:String(r[4]),own:r[1] === user.email})) : []};
   if (user.role === 'admin') result.users = rows_('Users').map(r => ({email:String(r[0]),name:uns_(r[1]),department:uns_(r[2]),role:String(r[3]),active:truth_(r[4])}));
+  result.ownAttractionRatings = config.stage === 6 ? attractionRatings_().filter(r => r[0] === user.email && result.attractions.some(a => a.id === r[1])).map(r => ({id:String(r[1]),score:integer_(r[2],0,3,'景點評分')})) : [];
+  result.attractionResults = config.stage === 6 ? attractionSummary_(result.attractions,active) : null;
   return result;
 }
 function stage_(config,allowed) { if (!allowed.includes(config.stage)) throw new Error('目前階段不開放此操作。'); }
@@ -335,7 +339,7 @@ function vote_(user,v,c) {
 }
 function audit_(user,action,detail) { append_('Audit',[uid_(),user.email,action,safe_(JSON.stringify(detail)),now_()]); }
 function saveSettings_(user,v,c) {
-  const stage = integer_(v.stage,1,5,'階段'), limit2 = integer_(v.voteLimit2,1,100,'第二階段票數'), limit3 = integer_(v.voteLimit3,1,100,'第三階段票數');
+  const stage = integer_(v.stage,1,6,'階段'), limit2 = integer_(v.voteLimit2,1,100,'第二階段票數'), limit3 = integer_(v.voteLimit3,1,100,'第三階段票數');
   const places = rows_('Places').map(place_);
   if (stage === 2 && !places.length) throw new Error('至少新增一個地點才能開始初選。');
   if (stage >= 3 && !places.some(p => p.finalist)) throw new Error('請先設定至少一個入圍地點。');
@@ -351,7 +355,8 @@ function saveSettings_(user,v,c) {
     if (end < start) throw new Error('返回日期須晚於出發日期。');
   }
   if (c.stage < 4 && (finalPlace || finalStart)) throw new Error('第四階段才可公告最終地點與日期，請先切換階段。');
-  if (stage === 5 && (!finalPlace || !finalStart)) throw new Error('進入景點募集前，請先確認最終地點與出遊日期。');
+  if (stage >= 5 && (!finalPlace || !finalStart)) throw new Error('進入景點募集或評分前，請先確認最終地點與出遊日期。');
+  if (stage === 6 && !rows_('Attractions').length) throw new Error('請先在第五階段新增至少一個景點，再開始評分。');
   const updates = {STAGE:stage,VOTE_LIMIT_2:limit2,VOTE_LIMIT_3:limit3,FINAL_PLACE:finalPlace,FINAL_START:finalStart,FINAL_END:finalEnd,ANNOUNCEMENT:safe_(text_(v.announcement,1000,'公告')),REVISION:c.revision+1};
   Object.entries(updates).forEach(([k,val]) => setting_(k,val));
   audit_(user,'saveSettings',updates);
@@ -386,7 +391,35 @@ function addAttraction_(user,v,c) {
 function deleteAttraction_(user,v,c) {
   stage_(c,[5]); const rows = rows_('Attractions'), i = rows.findIndex(r => r[0] === v.id);
   if (i < 0 || (rows[i][1] !== user.email && user.role !== 'admin')) throw new Error('只能刪除自己新增的景點。');
+  if (attractionRatings_().some(r => r[1] === v.id)) throw new Error('此景點已有評分，不能刪除。');
   remove_('Attractions',i);
+}
+function attractionRatings_() { return spreadsheet_().getSheetByName('AttractionRatings') ? rows_('AttractionRatings') : []; }
+function saveAttractionRating_(user,v,c) {
+  stage_(c,[6]);
+  if (!rows_('Attractions').some(r => r[0] === v.id)) throw new Error('景點不存在，請重新讀取。');
+  if (!['string','number'].includes(typeof v.score) || !/^[0-3]$/.test(String(v.score))) throw new Error('請選擇 0～3 的整數分數。');
+  const score = integer_(v.score,0,3,'景點評分');
+  const sheet = spreadsheet_().getSheetByName('AttractionRatings') || spreadsheet_().insertSheet('AttractionRatings');
+  if (!sheet.getLastRow()) { sheet.appendRow(TABLES_.AttractionRatings); sheet.setFrozenRows(1); }
+  const header = sheet.getRange(1,1,1,TABLES_.AttractionRatings.length).getValues()[0];
+  if (header.some((value,i) => value !== TABLES_.AttractionRatings[i])) throw new Error('AttractionRatings 表頭不符，請聯絡管理員。');
+  const matches = attractionRatings_().map((row,index)=>({row,index})).filter(({row})=>row[0] === user.email && row[1] === v.id);
+  if (matches.length > 1) throw new Error('景點評分資料重複，請聯絡管理員。');
+  const row = [user.email,v.id,score,now_()];
+  if (matches.length) write_('AttractionRatings',matches[0].index,row); else append_('AttractionRatings',row);
+}
+function attractionSummary_(attractions,active) {
+  const ids = new Set(attractions.map(a => a.id)), byKey = new Map();
+  attractionRatings_().filter(r => active.has(String(r[0])) && ids.has(String(r[1]))).forEach(r => byKey.set(String(r[0])+'|'+String(r[1]),r));
+  const ratings = [...byKey.values()], ranking = attractions.map(a => {
+    const scores = ratings.filter(r => r[1] === a.id).map(r => integer_(r[2],0,3,'景點評分'));
+    const totalScore = scores.reduce((sum,score)=>sum+score,0);
+    return {id:a.id,name:a.name,totalScore,ratedCount:scores.length,unratedCount:active.size-scores.length,averageScore:scores.length ? totalScore/scores.length : null,distribution:[0,1,2,3].map(score=>scores.filter(s=>s === score).length)};
+  }).sort((a,b)=>b.totalScore-a.totalScore || Number(b.ratedCount>0)-Number(a.ratedCount>0) || a.name.localeCompare(b.name));
+  let lastScore = null, rank = 0;
+  ranking.forEach((item,index)=>{if (!item.ratedCount) { item.rank=null; return; } if (item.totalScore !== lastScore) { rank=index+1; lastScore=item.totalScore; } item.rank=rank;});
+  return {participants:new Set(ratings.map(r=>r[0])).size,totalEligible:active.size,ranking};
 }
 
   setup_();
