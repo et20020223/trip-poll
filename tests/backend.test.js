@@ -235,3 +235,70 @@ test('bridge authenticates origin, source and channel before calling the public 
   listener({source:top,origin:'https://evil.invalid',data:m});listener({source:{},origin:'https://example.github.io',data:m});listener({source:top,origin:'https://example.github.io',data:{...m,channel:'bad'}});assert.equal(requests,0);
   listener({source:top,origin:'https://example.github.io',data:m});assert.equal(requests,1);
 });
+
+function seedAttractions(b) {
+  const [id]=seedFinalists(b), final={finalPlace:id,finalStart:'2026-12-03',finalEnd:'2026-12-06'};
+  b.transition(4); b.transition(4,final); b.transition(5,final);
+  for(const name of ['博物館','海岸','老街']) b.call(b.member,'addAttraction',{name,description:'一起參觀',url:''});
+  const ids=b.call(b.member,'load').attractions.map(a=>a.id); b.transition(6,final);
+  return {ids,final};
+}
+test('sixth stage requires confirmed dates and attractions; ratings enforce stage, identity and 0–3 scores',()=>{
+  const b=backend(),[place]=seedFinalists(b);
+  assert.throws(()=>b.transition(6),/確認/);
+  const final={finalPlace:place,finalStart:'2026-12-03',finalEnd:'2026-12-06'};
+  b.transition(4); b.transition(4,final);
+  assert.throws(()=>b.transition(6,final),/至少一個景點/);
+  b.transition(5,final); b.call(b.member,'addAttraction',{name:'博物館',description:'一起參觀',url:''});
+  const id=b.call(b.member,'load').attractions[0].id;
+  assert.throws(()=>b.call(b.member,'saveAttractionRating',{id,score:3}),/階段/);
+  const old=b.config().revision; b.transition(6,final);
+  assert.throws(()=>b.call(b.member,'saveAttractionRating',{id,score:3},old),/已更新/);
+  for(const score of [-1,4,1.5,'',null,true,'01']) assert.throws(()=>b.call(b.member,'saveAttractionRating',{id,score}),/整數/);
+  assert.throws(()=>b.call(b.member,'saveAttractionRating',{id:'missing',score:3}),/不存在/);
+  assert.throws(()=>b.call('', 'saveAttractionRating',{id,score:3}),/先登入/);
+  b.call(b.member,'saveAttractionRating',{id,score:0,email:'other@example.com'});
+  assert.deepEqual(b.call(b.member,'load').ownAttractionRatings,[{id,score:0}]);
+  assert.deepEqual(b.call(b.other,'load').ownAttractionRatings,[]);
+  b.call(b.admin,'saveAttractionRating',{id,score:1}); b.call(b.other,'saveAttractionRating',{id,score:2});
+  b.call(b.member,'saveAttractionRating',{id,score:'3'}); assert.equal(b.rows('AttractionRatings').length,3);
+  assert.equal(b.call(b.member,'load').attractionResults.ranking[0].totalScore,6);
+  assert.throws(()=>b.call(b.admin,'addAttraction',{name:'新景點',description:'x',url:''}),/階段/);
+  assert.throws(()=>b.call(b.admin,'deleteAttraction',{id}),/階段/);
+  b.transition(5,final); assert.throws(()=>b.call(b.admin,'deleteAttraction',{id}),/已有評分/);
+});
+test('attraction rankings separate unscored from zero, count distribution and ties, and remain anonymous',()=>{
+  const b=backend(),{ids}=seedAttractions(b);
+  b.call(b.member,'saveAttractionRating',{id:ids[0],score:0});
+  let stats=b.call(b.other,'load').attractionResults;
+  assert.equal(stats.ranking[0].id,ids[0]); assert.equal(stats.ranking[0].rank,1);
+  assert.equal(stats.ranking[0].averageScore,0); assert.equal(stats.ranking[1].averageScore,null); assert.equal(stats.ranking[1].rank,null);
+  assert.deepEqual(stats.ranking[0].distribution,[1,0,0,0]);
+  b.call(b.other,'saveAttractionRating',{id:ids[0],score:3});
+  b.call(b.member,'saveAttractionRating',{id:ids[1],score:3});
+  stats=b.call(b.other,'load').attractionResults;
+  assert.equal(stats.participants,2); assert.equal(stats.totalEligible,3);
+  const museum=stats.ranking.find(a=>a.id===ids[0]); assert.equal(museum.totalScore,3); assert.equal(museum.averageScore,1.5); assert.equal(museum.unratedCount,1);
+  assert.deepEqual(museum.distribution,[1,0,0,1]); assert.deepEqual(stats.ranking.map(a=>a.rank),[1,1,null]);
+  assert.ok(!JSON.stringify(stats).includes('@'));
+  b.call(b.member,'saveAttractionRating',{id:ids[0],score:2});
+  assert.equal(b.call(b.other,'load').attractionResults.ranking[0].totalScore,5);
+  b.call(b.admin,'saveUser',{email:'other@example.com',name:'停用同事',department:'',role:'member',active:false});
+  stats=b.call(b.member,'load').attractionResults; assert.equal(stats.totalEligible,2); assert.equal(stats.participants,1); assert.equal(stats.ranking.find(a=>a.id===ids[0]).totalScore,2);
+  assert.throws(()=>b.call(b.other,'saveAttractionRating',{id:ids[0],score:1}),/沒有填寫權限/);
+});
+test('legacy surveys create rating table on first save and correctly update rows after blank rows',()=>{
+  const b=backend(),{ids,final}=seedAttractions(b); b.dropTable('AttractionRatings');
+  assert.equal(b.call(b.member,'load').attractionResults.participants,0);
+  b.call(b.member,'saveAttractionRating',{id:ids[0],score:0});
+  assert.deepEqual(Array.from(b.sheet('AttractionRatings').rows[0]),['email','attractionId','score','updatedAt']);
+  b.sheet('AttractionRatings').appendRow(['','','','']);
+  b.call(b.member,'saveAttractionRating',{id:ids[1],score:1});
+  b.call(b.member,'saveAttractionRating',{id:ids[1],score:2});
+  assert.equal(b.rows('AttractionRatings').length,2); assert.equal(b.call(b.member,'load').ownAttractionRatings.find(r=>r.id===ids[1]).score,2);
+  b.transition(5,final); assert.throws(()=>b.call(b.member,'deleteAttraction',{id:ids[0]}),/已有評分/);
+  b.transition(6,final);
+  b.sheet('AttractionRatings').appendRow(['member@example.com',ids[1],3,'']);
+  assert.throws(()=>b.call(b.member,'saveAttractionRating',{id:ids[1],score:1}),/資料重複/);
+  assert.equal(b.call(b.admin,'load').attractionResults.ranking.find(a=>a.id===ids[1]).ratedCount,1);
+});
