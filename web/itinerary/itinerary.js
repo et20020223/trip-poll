@@ -6,7 +6,7 @@ function element(tag,text,className){const node=document.createElement(tag);if(t
 function notify(text){clearTimeout(toastTimer);$('#toast').textContent=text;toastTimer=setTimeout(()=>$('#toast').textContent='',4000);}
 function category(event){if(/MM\d/.test(event.title))return '航班';if(/入住|退房|回大阪飯店|返回.*住宿/.test(event.title))return '住宿 / 移動';if(/午餐|晚餐|早餐|麻糬/.test(event.title)&&!/前往|返回/.test(event.title))return '餐食 / 散步';if(/前往|搭|巴士|取行李|寄物|候車|步行到|步行至|下山/.test(event.title))return '交通';return '散步 / 景點';}
 function mapQuery(event,day){let place=event.place.split(/→/).at(-1).trim();if(event.address&&/天壇|但馬屋/.test(event.title))return event.address;if(/住宿/.test(place)&&event.address)return event.address;if(!place||/^京都住宿$/.test(place))return '京都市東山区西御門町440-10';if(/大阪.*住宿|大阪飯店/.test(place))return '大阪市西成区鶴見橋1丁目17-5';if(/桃園|關西|Universal|USJ/.test(place))return place;return place+(day.number<4?' 京都 日本':' 大阪 日本');}
-function importantLine(event){const lines=event.notes.split(/[。\n]/).map(s=>s.trim()).filter(Boolean);return lines.find(s=>/尚未預訂|擬訂 14|不要直接搭急行|不是 17:00|不得搭僅到|小火車|最晚維持|須在|19:00 後關閉/.test(s));}
+function importantLine(event){const lines=event.notes.split(/[。\n]/).map(s=>s.trim()).filter(Boolean);return lines.find(s=>/立即使用|尚未預訂|擬訂 14|不要直接搭急行|不是 17:00|不得搭僅到|小火車|最晚維持|須在|19:00 後關閉/.test(s));}
 function eventCard(event,day){
   const item=element('li',undefined,'timeline-item');item.append(element('span',undefined,'timeline-dot'));
   const article=element('article',undefined,'event-card');const top=element('div',undefined,'event-top');const labels=element('div',undefined,'event-labels');labels.append(element('p',event.time||'時間待確認','event-time'),element('span',category(event),'event-category'));top.append(labels,element('h3',event.title));
@@ -32,7 +32,7 @@ function render(day,route){
   $('#previous-day').disabled=day.number===1;$('#next-day').disabled=day.number===itinerary.days.length;
 }
 async function start(){
-  try{const response=await fetch('./itinerary-data.json?v=2');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
+  try{const response=await fetch('./itinerary-data.json?v=3');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
     const {day,route}=stateFromHash();render(day,route);$('#overview-days').replaceChildren();itinerary.days.forEach(d=>{const button=element('button',undefined,'overview-day');button.type='button';const text=element('span');text.append(element('small',`11/${d.date.slice(-2)}（${d.weekday}）`),element('b',d.title));button.append(element('strong',String(d.number).padStart(2,'0')),text,element('span','↗'));button.addEventListener('click',()=>{$('#overview').close();navigate(d.number);});$('#overview-days').append(button);});
     $('#previous-day').onclick=()=>navigate(currentDay.number-1);$('#next-day').onclick=()=>navigate(currentDay.number+1);
   }catch(error){const box=element('div',undefined,'load-error');box.append(element('h2','行程暫時無法讀取'),element('p','請確認網路連線後重試。'));const retry=element('button','重新讀取');retry.onclick=start;box.append(retry);$('#day-content').replaceChildren(box);$('#previous-day').disabled=true;$('#next-day').disabled=true;}
