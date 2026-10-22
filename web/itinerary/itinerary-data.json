@@ -8,7 +8,8 @@
   "sourceUrl": "https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=473794097#gid=473794097",
   "sourceSheets": [
     "總行程",
-    "B 行程"
+    "B 行程",
+    "隱藏行程"
   ],
   "notice": "除特別標示外，時間皆為日本時間（比台灣快 1 小時）。班次與預估區間沿用原表，非即時資訊；候選班次不代表已訂位。",
   "days": [
@@ -721,6 +722,95 @@
             }
           ],
           "note": "山區路線含上坡與階梯；JR 巴士班次需於出發前確認。"
+        },
+        {
+          "title": "豬一・新風館・京都賞楓",
+          "subtitle": "自行規劃的隱藏行程，從拉麵整理券到永觀堂",
+          "label": "隱藏行程・豬一 / 新風館",
+          "note": "自行規劃的特別路線，可與原本 A／B 行程擇一。豬一午餐依整理券指定時間調整；南禪寺水路閣為可選安排。",
+          "id": "special",
+          "events": [
+            {
+              "id": "special3-1",
+              "time": "10:15–10:30",
+              "title": "到麵屋豬一本店等候領券",
+              "place": "麵屋豬一本店",
+              "address": "",
+              "notes": "10:30 開始發放整理券。",
+              "train": "",
+              "source": "隱藏行程!A4:D4"
+            },
+            {
+              "id": "special3-2",
+              "time": "10:30–11:00",
+              "title": "前往新風館",
+              "place": "新風館",
+              "address": "",
+              "notes": "步行估約 25–30 分鐘。",
+              "train": "",
+              "source": "隱藏行程!A5:D5"
+            },
+            {
+              "id": "special3-3",
+              "time": "11:00–12:15",
+              "title": "Le Labo＋BEAMS JAPAN 京都",
+              "place": "新風館 LE LABO BEAMS JAPAN 京都",
+              "address": "",
+              "notes": "逛 Le Labo 與 BEAMS JAPAN 京都。",
+              "train": "",
+              "source": "隱藏行程!A6:D6"
+            },
+            {
+              "id": "special3-4",
+              "time": "12:15–12:45",
+              "title": "返回豬一",
+              "place": "麵屋豬一本店",
+              "address": "",
+              "notes": "返回豬一，依整理券指定時間調整。",
+              "train": "",
+              "source": "隱藏行程!A7:D7"
+            },
+            {
+              "id": "special3-5",
+              "time": "12:45–13:45",
+              "title": "豬一午餐",
+              "place": "麵屋豬一本店",
+              "address": "",
+              "notes": "依整理券指定時間調整。",
+              "train": "",
+              "source": "隱藏行程!A8:D8"
+            },
+            {
+              "id": "special3-6",
+              "time": "13:45–14:45",
+              "title": "前往永觀堂",
+              "place": "永觀堂",
+              "address": "",
+              "notes": "預留交通時間。",
+              "train": "",
+              "source": "隱藏行程!A9:D9"
+            },
+            {
+              "id": "special3-7",
+              "time": "14:45–16:00",
+              "title": "永觀堂參觀、賞楓",
+              "place": "永觀堂",
+              "address": "",
+              "notes": "參觀、賞楓。",
+              "train": "",
+              "source": "隱藏行程!A10:D10"
+            },
+            {
+              "id": "special3-8",
+              "time": "16:00–16:45",
+              "title": "南禪寺水路閣散步拍照（可選）",
+              "place": "南禪寺水路閣",
+              "address": "",
+              "notes": "可接南禪寺水路閣散步拍照。",
+              "train": "",
+              "source": "隱藏行程!A11:D11"
+            }
+          ]
         }
       ]
     },
@@ -823,6 +913,145 @@
               "notes": "以20:00離園估算，步行至Universal City，JR夢咲線至西九條，轉大阪環狀線普通（大正、今宮方向）至今宮，再步行約12～15分回住宿。散場人潮含候車估60～75分，約21:00～21:15抵達。",
               "train": "【區間｜暫按20:00離園】\nUniversal City20:15～20:35：夢咲線往西九條\n西九條20:30～20:50：環狀線普通往大正、今宮\n人潮多時順延，預估21:00～21:15回住宿。",
               "source": "總行程!C44:H44"
+            }
+          ]
+        },
+        {
+          "title": "住吉大社・大阪美食與逛街",
+          "subtitle": "自行規劃的隱藏行程，走訪神社、咖啡與選物店",
+          "label": "隱藏行程・大阪散策",
+          "note": "自行規劃的特別路線，可與 USJ 行程擇一。麦と麺助已含候位時間，依人潮可能延長；橘子街想去的店優先。",
+          "id": "special",
+          "events": [
+            {
+              "id": "special5-1",
+              "time": "08:30–09:00",
+              "title": "難波 → 住吉大社",
+              "place": "難波 → 住吉大社",
+              "address": "",
+              "notes": "南海本線普通車 → 住吉大社站。",
+              "train": "",
+              "source": "隱藏行程!A15:D15"
+            },
+            {
+              "id": "special5-2",
+              "time": "09:00–09:50",
+              "title": "住吉大社・楠珺社",
+              "place": "住吉大社 楠珺社",
+              "address": "",
+              "notes": "參拜、太鼓橋、買招福貓。",
+              "train": "",
+              "source": "隱藏行程!A16:D16"
+            },
+            {
+              "id": "special5-3",
+              "time": "09:50–10:50",
+              "title": "前往麦と麺助",
+              "place": "麦と麺助",
+              "address": "",
+              "notes": "南海回難波 → 御堂筋線中津站 → 步行。",
+              "train": "",
+              "source": "隱藏行程!A17:D17"
+            },
+            {
+              "id": "special5-4",
+              "time": "10:50–12:30",
+              "title": "麦と麺助午餐",
+              "place": "麦と麺助",
+              "address": "",
+              "notes": "包含候位時間，可能依人潮延長。",
+              "train": "",
+              "source": "隱藏行程!A18:D18"
+            },
+            {
+              "id": "special5-5",
+              "time": "12:30–13:20",
+              "title": "OSA COFFEE 中崎町店",
+              "place": "OSA COFFEE 中崎町店",
+              "address": "",
+              "notes": "步行約 15–20 分鐘，喝咖啡休息。",
+              "train": "",
+              "source": "隱藏行程!A19:D19"
+            },
+            {
+              "id": "special5-6",
+              "time": "13:20–14:00",
+              "title": "grenier 梅田店",
+              "place": "grenier 梅田店",
+              "address": "",
+              "notes": "步行往梅田，買千層酥。",
+              "train": "",
+              "source": "隱藏行程!A20:D20"
+            },
+            {
+              "id": "special5-7",
+              "time": "14:00–14:45",
+              "title": "niko and…｜HEP FIVE 1F",
+              "place": "niko and… HEP FIVE",
+              "address": "",
+              "notes": "逛衣服、生活雜貨。HEP FIVE 1F。",
+              "train": "",
+              "source": "隱藏行程!A21:D21"
+            },
+            {
+              "id": "special5-8",
+              "time": "14:45–15:30",
+              "title": "阪急梅田本店 B1",
+              "place": "阪急梅田本店",
+              "address": "",
+              "notes": "買伴手禮：GRAND Calbee、Sugar Butter Tree。B1。",
+              "train": "",
+              "source": "隱藏行程!A22:D22"
+            },
+            {
+              "id": "special5-9",
+              "time": "15:30–16:15",
+              "title": "BEAMS｜LUCUA 3F",
+              "place": "BEAMS LUCUA",
+              "address": "",
+              "notes": "逛服飾、配件。LUCUA 3F。",
+              "train": "",
+              "source": "隱藏行程!A23:D23"
+            },
+            {
+              "id": "special5-10",
+              "time": "16:15–17:00",
+              "title": "前往橘子街",
+              "place": "西梅田站 → 四橋站 → 橘子街",
+              "address": "",
+              "notes": "西梅田站 → 四橋線四橋站 → 步行。",
+              "train": "",
+              "source": "隱藏行程!A24:D24"
+            },
+            {
+              "id": "special5-11",
+              "time": "17:00–18:15",
+              "title": "橘子街、堀江",
+              "place": "橘子街 堀江",
+              "address": "",
+              "notes": "逛選物、服飾店；想去的店優先。",
+              "train": "",
+              "source": "隱藏行程!A25:D25"
+            },
+            {
+              "id": "special5-12",
+              "time": "18:15–19:00",
+              "title": "UNIQLO SHINSAIBASHI",
+              "place": "UNIQLO SHINSAIBASHI",
+              "address": "",
+              "notes": "往心齋橋方向步行約 15–20 分鐘，再購物。",
+              "train": "",
+              "source": "隱藏行程!A26:D26"
+            },
+            {
+              "id": "special5-13",
+              "time": "19:00 後",
+              "title": "心齋橋／道頓堀晚餐、自由活動",
+              "place": "心齋橋 道頓堀",
+              "address": "",
+              "notes": "吃飯後逛回難波。",
+              "train": "",
+              "source": "隱藏行程!A27:D27"
             }
           ]
         }
