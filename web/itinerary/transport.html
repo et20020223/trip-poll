@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#254c3c">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="京都大阪六日搭車攻略。依日期與方案查找上車處、行車方向、轉乘步驟與交通提醒，免登入即可查看。">
+  <title>搭車攻略｜京都大阪行程手帖</title>
+  <link rel="icon" href="./mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./itinerary.css?v=3">
+  <style>
+    .transport-main{max-width:850px;padding-bottom:100px}.transport-intro{padding:12px 0 22px}.transport-intro h1{font-family:"Noto Serif TC","Songti TC",serif;font-size:35px;line-height:1.5;margin:6px 0}.transport-intro .eyebrow{color:var(--orange)}.transport-intro>p:last-child{font-size:13px;color:var(--muted)}.guide-confirmed{margin:0 0 16px}.guide-basics{font-size:13px;padding:0 0 16px;border-bottom:1px solid var(--line)}.guide-basics summary{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700}.guide-basics summary:after{content:'＋';margin-left:auto}.guide-basics[open] summary:after{content:'−'}.guide-basics p{color:var(--muted);margin:10px 0;line-height:1.85}.guide-filter{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 0}.guide-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.guide-days button{font-size:12px;min-width:0;min-height:44px;padding:5px 0;border:1px solid var(--line);background:var(--card);border-radius:9px;font-variant-numeric:tabular-nums}.guide-days button[aria-pressed=true]{background:var(--green);color:white;border-color:var(--green);font-weight:700}.guide-search{display:block;margin:14px 0 8px}.guide-search span{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.guide-search input{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;min-height:48px;outline-offset:3px}.guide-search input:focus{outline:2px solid var(--orange)}.guide-groups{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.guide-groups button{min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:22px;background:var(--card);font-size:12px}.guide-groups button[aria-pressed=true]{background:#edf0e5;border-color:#8d9f7c;color:var(--green);font-weight:700}.guide-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted);margin:14px 0}.guide-controls button{min-height:40px;font-size:12px;border-bottom:1px solid #a8ae9e}.guide-day-section{margin:22px 0 30px;scroll-margin-top:80px}.guide-day-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.guide-day-title h2{font-family:"Noto Serif TC","Songti TC",serif;font-size:24px}.guide-day-title a{font-size:11px;color:var(--muted);white-space:nowrap}.guide-card{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:11px;overflow:hidden}.guide-card>summary{list-style:none;padding:17px 18px;cursor:pointer;position:relative}.guide-card>summary:after{content:'＋';position:absolute;right:17px;top:17px;color:var(--muted)}.guide-card[open]>summary:after{content:'−'}.guide-plan{display:inline-block;background:#edf0e6;border-radius:5px;font-size:10px;color:#66734e;padding:2px 6px;margin-bottom:7px}.guide-card h3{font-size:17px;line-height:1.6;padding-right:25px;margin-bottom:5px;overflow-wrap:anywhere}.guide-time{color:var(--muted);font-size:12px;line-height:1.8;padding-right:12px}.guide-content{border-top:1px solid #eeeee5;padding:15px 18px 18px;font-size:14px;line-height:1.85;overflow-wrap:anywhere;white-space:pre-line}.guide-content dl{margin:0 0 14px;background:#edf0e6;border-radius:10px;padding:12px 14px}.guide-content dt{font-size:11px;color:#66734e;font-weight:700;margin-top:10px}.guide-content dt:first-child{margin-top:0}.guide-content dd{margin:3px 0 0;color:var(--green);font-weight:650}.guide-content h4{font-size:12px;color:var(--green);margin:12px 0 5px}.guide-caution{background:#f7eedf;color:#79582e;border-radius:9px;padding:11px 13px;margin:13px 0}.guide-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:15px;font-size:12px}.guide-links a{min-height:40px;display:inline-flex;align-items:center}.guide-empty{padding:32px 15px;text-align:center;border:1px dashed var(--line);border-radius:14px;font-size:14px}.guide-empty button{display:block;margin:14px auto 0;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card)}.guide-diagram{padding:20px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.guide-diagram a{display:inline-block;font-weight:700;font-size:14px;color:var(--green);min-height:44px;padding:8px 0}.transport-bottom{position:fixed;bottom:0;left:0;right:0;background:#fffefaf5;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:24px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:20;font-size:12px}.transport-bottom a,.transport-bottom button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 18px;border-radius:10px;text-decoration:none}.transport-bottom button{background:var(--green);color:#fff}.transport-footer{padding:20px 0;font-size:11px;color:var(--muted);text-align:center}.transport-footer a{display:inline-block;padding:10px}.transport-page .site-header{max-width:914px}.transport-page .page-switch{max-width:786px}.transport-page .load-error{padding:25px 10px;color:var(--muted)}
+    @media(max-width:600px){.transport-intro h1{font-size:30px}.transport-intro{padding:10px 0 18px}.transport-intro>p:last-child{font-size:12px}.guide-days button{font-size:11px}.guide-day-title h2{font-size:21px}.guide-card>summary{padding:15px}.guide-card h3{font-size:16px}.guide-content{padding:13px 15px 15px}.guide-controls{margin:10px 0}.guide-groups button{font-size:11px}.guide-day-title a{font-size:10px}.transport-bottom{gap:10px}.transport-page .page-switch{margin-left:20px;margin-right:20px}}
+    @media(max-width:360px){.transport-page .page-switch{margin-left:14px;margin-right:14px}.guide-days button{font-size:10px}.guide-content{font-size:13px}}
+    @media print{.page-switch,.guide-filter,.guide-search,.guide-groups,.guide-controls,.transport-bottom,.guide-diagram{display:none}.transport-main{max-width:none;padding:0}.guide-card{break-inside:avoid}.guide-content{display:block}.guide-card>summary:after{display:none}}
+  </style>
+</head>
+<body class="transport-page">
+  <a class="skip-link" href="#guide-results">跳到搭車路段</a>
+  <header class="site-header"><a class="wordmark" href="./" aria-label="京都大阪行程首頁"><span class="brand-stamp" aria-hidden="true">旅</span><span>一起出發<small>OUR TRAVEL JOURNAL</small></span></a><button id="guide-share" class="icon-button">↗ 分享</button></header>
+  <nav class="page-switch" aria-label="查看內容"><a id="daily-link" href="./">每日行程</a><a href="./transport.html" aria-current="page">搭車攻略</a></nav>
+  <main class="transport-main">
+    <section class="transport-intro"><p class="eyebrow">GETTING AROUND · 2026 AUTUMN</p><h1>搭車攻略</h1><p>在哪裡上車、看哪個方向、怎麼轉乘。</p></section>
+    <p id="guide-confirmed" class="route-notice guide-confirmed">正在讀取 10/23 更新版…</p>
+    <details class="guide-basics"><summary>搭車前先看</summary><div id="guide-notes"></div></details>
+    <nav id="guide-days" class="guide-filter guide-days" aria-label="選擇搭車攻略日期"></nav>
+    <label class="guide-search"><span>快速找路段</span><input id="guide-search" type="search" placeholder="搜尋車站、路線或目的地" autocomplete="off"></label>
+    <div id="guide-groups" class="guide-groups" role="group" aria-label="選擇行程方案"></div>
+    <div class="guide-controls"><span id="guide-count" role="status" aria-live="polite"></span><button id="guide-expand" aria-expanded="false">展開全部路段</button></div>
+    <section id="guide-results" tabindex="-1" aria-label="搭車路段"><p class="loading">正在整理上車處與轉乘步驟…</p></section>
+    <aside class="guide-diagram"><a id="guide-diagram-link" href="https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=1116814390#gid=1116814390&amp;range=A47" target="_blank" rel="noopener noreferrer">查看原表路線示意圖 ↗</a><p id="guide-diagram-note"></p></aside>
+    <footer class="transport-footer"><p>依試算表「搭車攻略」10/23 更新版整理</p><a id="guide-source" href="https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=1116814390#gid=1116814390" target="_blank" rel="noopener noreferrer">原始搭車攻略 ↗</a></footer>
+  </main>
+  <nav class="transport-bottom" aria-label="攻略操作"><a id="back-to-itinerary" href="./">← 回每日行程</a><button id="guide-top">↑ 回到日期選擇</button></nav>
+  <div id="guide-toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">請開啟 JavaScript，或<a href="https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=1116814390#gid=1116814390">查看原始搭車攻略</a>。</p></noscript>
+  <script type="module">
+    const $ = selector => document.querySelector(selector);
+    const make = (tag, text, name) => {const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(name)node.className=name;return node;};
+    const plans={2:[['all','全部方案'],['b','B・宇治'],['a','A・東山備選']],3:[['all','全部方案'],['a','A・路線 1'],['b','B・高雄三尾'],['special','隱藏・豬一 / 新風館']],5:[['all','全部方案'],['a','A・USJ'],['b','B・自由行 / 隱藏']]};
+    let data, day='all', group='all', query='', timer;
+    const readState=()=>{const p=new URLSearchParams(location.hash.slice(1));day=/^[1-6]$/.test(p.get('day'))?p.get('day'):'all';group=(plans[day]||[]).some(([id])=>id===p.get('group'))?p.get('group'):'all';query=p.get('q')||'';};
+    function saveState(){const p=new URLSearchParams();if(day!=='all')p.set('day',day);if(group!=='all')p.set('group',group);if(query)p.set('q',query);history.replaceState(null,'',location.pathname+location.search+(p.size?'#'+p:''));}
+    function itineraryLink(number,plan){let route='main';if(number===2)route=plan==='a'?'main':'b';if(number===3)route=plan==='all'?'main':plan==='a'?'main':plan;if(number===5)route=plan==='b'?'special':'main';return './#day='+number+'&route='+route;}
+    function updateReturnLink(){const href=day==='all'?'./':itineraryLink(Number(day),group);$('#daily-link').href=href;$('#back-to-itinerary').href=href;}
+    function selectDay(value){day=value;group='all';saveState();renderControls();render();}
+    function renderControls(){
+      $('#guide-days').replaceChildren();['all','1','2','3','4','5','6'].forEach(value=>{const b=make('button',value==='all'?'全部':'11/'+(11+Number(value)));b.type='button';b.setAttribute('aria-label',value==='all'?'全部日期':`第 ${value} 天，11 月 ${11+Number(value)} 日`);b.setAttribute('aria-pressed',String(value===day));b.onclick=()=>selectDay(value);$('#guide-days').append(b);});
+      $('#guide-groups').replaceChildren();(plans[day]||[]).forEach(([id,label])=>{const b=make('button',label);b.type='button';b.setAttribute('aria-pressed',String(id===group));b.onclick=()=>{group=id;saveState();renderControls();render();};$('#guide-groups').append(b);});
+      $('#guide-search').value=query;updateReturnLink();
+    }
+    function card(record){
+      const details=make('details',undefined,'guide-card'),summary=make('summary');summary.append(make('span',record.plan,'guide-plan'),make('h3',record.title),make('p',record.time,'guide-time'));details.append(summary);
+      const content=make('div',undefined,'guide-content'),dl=make('dl');dl.append(make('dt','在哪裡上車'),make('dd',record.boarding),make('dt','看哪個方向'),make('dd',record.direction));content.append(dl,make('h4','怎麼搭・在哪裡轉乘'),make('p',record.steps),make('p',record.note,'guide-caution'));
+      if(record.userReminder)content.append(make('p',record.userReminder,'guide-caution'));
+      const links=make('div',undefined,'guide-links'),reference=make('a','原表參考連結 ↗');reference.href=record.reference;reference.target='_blank';reference.rel='noopener noreferrer';links.append(reference);content.append(links);details.append(content);details.addEventListener('toggle',updateExpand);return details;
+    }
+    function updateExpand(){const cards=[...$('#guide-results').querySelectorAll('.guide-card')];const all=cards.length>0&&cards.every(c=>c.open);$('#guide-expand').textContent=all?'收合全部路段':'展開全部路段';$('#guide-expand').setAttribute('aria-expanded',String(all));$('#guide-expand').disabled=cards.length===0;}
+    function render(){
+      const keywords=query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+      const records=data.records.filter(r=>(day==='all'||r.day===Number(day))&&(group==='all'||r.group===group||r.group==='shared')&&keywords.every(q=>[r.title,r.time,r.plan,r.boarding,r.direction,r.steps,r.note].join(' ').toLocaleLowerCase().includes(q)));
+      const view=$('#guide-results');view.replaceChildren();$('#guide-count').textContent=`${records.length} 段交通攻略 · 日本時間`;
+      if(!records.length){const empty=make('div',undefined,'guide-empty');empty.append(make('p','找不到符合的路段，試試其他車站名稱或清除篩選。'));const clear=make('button','顯示全部攻略');clear.type='button';clear.onclick=()=>{day='all';group='all';query='';saveState();renderControls();render();};empty.append(clear);view.append(empty);}
+      [...new Set(records.map(r=>r.day))].forEach(number=>{const section=make('section',undefined,'guide-day-section'),heading=make('div',undefined,'guide-day-title'),link=make('a','查看當日行程 ↗');link.href=itineraryLink(number,group);heading.append(make('h2',`DAY ${String(number).padStart(2,'0')} · 11/${number+11}`),link);section.append(heading);records.filter(r=>r.day===number).forEach(r=>section.append(card(r)));view.append(section);});
+      updateExpand();updateReturnLink();
+    }
+    async function start(){try{const response=await fetch('./transport-data.json?v=1');if(!response.ok)throw Error('read');data=await response.json();if(!Array.isArray(data.records)||!data.records.length)throw Error('data');$('#guide-confirmed').textContent=data.confirmation;$('#guide-notes').replaceChildren(...data.notes.map(note=>make('p',note)));$('#guide-diagram-note').textContent=data.diagramNote;$('#guide-source').href=data.sourceUrl;readState();renderControls();render();}catch{const box=make('div',undefined,'load-error');box.append(make('p','搭車攻略暫時無法讀取，請確認網路連線。'));const retry=make('button','重新讀取');retry.onclick=start;box.append(retry);$('#guide-results').replaceChildren(box);$('#guide-expand').disabled=true;}}
+    $('#guide-search').addEventListener('input',()=>{query=$('#guide-search').value;saveState();if(data)render();});
+    $('#guide-expand').onclick=()=>{const cards=[...$('#guide-results').querySelectorAll('.guide-card')],open=cards.some(c=>!c.open);cards.forEach(c=>c.open=open);updateExpand();};
+    $('#guide-top').onclick=()=>$('#guide-days').scrollIntoView({block:'start'});
+    $('.skip-link').onclick=event=>{event.preventDefault();$('#guide-results').scrollIntoView({block:'start'});$('#guide-results').focus({preventScroll:true});};
+    $('#guide-share').onclick=async()=>{clearTimeout(timer);try{await navigator.clipboard.writeText(location.href);$('#guide-toast').textContent='攻略連結已複製，包含目前的日期與篩選。';}catch{$('#guide-toast').textContent='請從瀏覽器網址列複製攻略連結。';}timer=setTimeout(()=>$('#guide-toast').textContent='',4000);};
+    window.addEventListener('hashchange',()=>{if(data){readState();renderControls();render();}});start();
+  </script>
+</body>
+</html>
