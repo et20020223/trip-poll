@@ -29,6 +29,30 @@
       "category": "準備清單",
       "title": "交通 IC 卡",
       "note": ""
+    },
+    {
+      "id": "yen-cards",
+      "category": "準備清單",
+      "title": "日圓現金／信用卡",
+      "note": "確認付款方式，準備一些零錢。"
+    },
+    {
+      "id": "charging-kit",
+      "category": "準備清單",
+      "title": "充電設備",
+      "note": "手機充電器、線、行動電源。"
+    },
+    {
+      "id": "clothing-rain",
+      "category": "準備清單",
+      "title": "衣物與雨具",
+      "note": "保暖外套、折傘，以及適合長時間步行的鞋。"
+    },
+    {
+      "id": "personal-essentials",
+      "category": "準備清單",
+      "title": "個人常備用品",
+      "note": "平常使用的藥品、過敏或其他個人必需品。"
     }
   ]
 }
