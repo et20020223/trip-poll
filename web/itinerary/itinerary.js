@@ -1,3 +1,4 @@
+import {createJourneyButton} from './transit-diagrams.js?v=4';
 const $ = selector => document.querySelector(selector);
 let itinerary, currentDay, currentRoute, toastTimer;
 const icons={pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',arrow:'M7 17 17 7M7 7h10v10',info:'M12 16v-4m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'};
@@ -13,7 +14,7 @@ function eventCard(event,day){
   if(event.place){const place=element('p',undefined,'event-location');place.append(icon('pin'),element('span',event.place));top.append(place);}
   const highlight=importantLine(event);if(highlight)top.append(element('p',highlight+'。','event-highlight'));
   article.append(top);const actions=element('div',undefined,'event-actions');
-  if(event.notes||event.train||event.address){const details=element('details',undefined,'event-details');const summary=element('summary');summary.append(icon('info'),element('span','交通與行程詳情'),element('span','⌄','chevron'));const content=element('div',undefined,'detail-content');if(event.notes){content.append(element('h4','怎麼走・怎麼安排'),element('p',event.notes));}if(event.train){const train=element('div',undefined,'train-note');train.append(element('h4','搭車時間 / 提醒'),element('p',event.train));content.append(train);}if(event.address)content.append(element('p','原表地址：'+event.address,'detail-address'));details.append(summary,content);actions.append(details);}
+  if(event.notes||event.train||event.address||event.rideGuides?.length){const details=element('details',undefined,'event-details');const summary=element('summary');summary.append(icon('info'),element('span','交通與行程詳情'),element('span','⌄','chevron'));const content=element('div',undefined,'detail-content');if(event.notes){content.append(element('h4','怎麼走・怎麼安排'),element('p',event.notes));}if(event.train){const train=element('div',undefined,'train-note');train.append(element('h4','搭車時間 / 提醒'),element('p',event.train));content.append(train);}if(event.address)content.append(element('p','原表地址：'+event.address,'detail-address'));if(event.rideGuides?.length){const links=element('div',undefined,'event-journey-links');event.rideGuides.forEach(ref=>links.append(createJourneyButton({id:ref.id,title:event.title},'journey-open',{variant:ref.variant,label:ref.label})));content.prepend(links);}details.append(summary,content);actions.append(details);}
   if(event.place){const a=element('a',undefined,'map-link');a.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(mapQuery(event,day));a.target='_blank';a.rel='noopener noreferrer';a.setAttribute('aria-label','地圖：'+event.place);a.append(element('span','地圖'),icon('arrow'));actions.append(a);}
   if(actions.children.length)article.append(actions);item.append(article);return item;
 }
@@ -34,7 +35,7 @@ function render(day,route){
   $('#previous-day').disabled=day.number===1;$('#next-day').disabled=day.number===itinerary.days.length;
 }
 async function start(){
-  try{const response=await fetch('./itinerary-data.json?v=4');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
+  try{const response=await fetch('./itinerary-data.json?v=5');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
     const {day,route}=stateFromHash();render(day,route);$('#overview-days').replaceChildren();itinerary.days.forEach(d=>{const button=element('button',undefined,'overview-day');button.type='button';const text=element('span');text.append(element('small',`11/${d.date.slice(-2)}（${d.weekday}）`),element('b',d.title));button.append(element('strong',String(d.number).padStart(2,'0')),text,element('span','↗'));button.addEventListener('click',()=>{$('#overview').close();navigate(d.number);});$('#overview-days').append(button);});
     $('#previous-day').onclick=()=>navigate(currentDay.number-1);$('#next-day').onclick=()=>navigate(currentDay.number+1);
   }catch(error){const box=element('div',undefined,'load-error');box.append(element('h2','行程暫時無法讀取'),element('p','請確認網路連線後重試。'));const retry=element('button','重新讀取');retry.onclick=start;box.append(retry);$('#day-content').replaceChildren(box);$('#previous-day').disabled=true;$('#next-day').disabled=true;}
