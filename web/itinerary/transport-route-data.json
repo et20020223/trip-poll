@@ -1,0 +1,3096 @@
+{
+  "anchors": {
+    "kyoto-jr": [
+      "kyoto",
+      1180,
+      1368
+    ],
+    "tofukuji": [
+      "kyoto",
+      1412,
+      1551
+    ],
+    "kiyomizu": [
+      "kyoto",
+      1464,
+      1188
+    ],
+    "gion": [
+      "kyoto",
+      1464,
+      1086
+    ],
+    "sanjo-keihan": [
+      "kyoto",
+      1497,
+      923
+    ],
+    "sanjo": [
+      "kyoto",
+      1464,
+      950
+    ],
+    "keage": [
+      "kyoto",
+      1807,
+      976
+    ],
+    "fushimi-inari": [
+      "kyoto",
+      1262,
+      1606
+    ],
+    "chushojima": [
+      "kyoto",
+      1175,
+      1956
+    ],
+    "uji": [
+      "kyoto",
+      1734,
+      2140
+    ],
+    "tambabashi": [
+      "kyoto",
+      1261,
+      1866
+    ],
+    "kintetsu-tambabashi": [
+      "kyoto",
+      1301,
+      1866
+    ],
+    "toji": [
+      "kyoto",
+      1033,
+      1474
+    ],
+    "osaka-jr": [
+      "osaka",
+      799,
+      797
+    ],
+    "umeda": [
+      "osaka",
+      849,
+      837
+    ],
+    "nishiumeda": [
+      "osaka",
+      792,
+      850
+    ],
+    "mino-kayano": [
+      "osaka",
+      849,
+      12
+    ],
+    "nakatsu": [
+      "osaka",
+      849,
+      716
+    ],
+    "namba-y": [
+      "osaka",
+      774,
+      1387
+    ],
+    "namba-m": [
+      "osaka",
+      849,
+      1387
+    ],
+    "namba-nankai": [
+      "osaka",
+      865,
+      1434
+    ],
+    "yotsubashi": [
+      "osaka",
+      774,
+      1284
+    ],
+    "hanazonocho": [
+      "osaka",
+      817,
+      1647
+    ],
+    "imamiya": [
+      "osaka",
+      706,
+      1541
+    ],
+    "nishikujo": [
+      "osaka",
+      471,
+      1018
+    ],
+    "universal-city": [
+      "osaka",
+      292,
+      1047
+    ],
+    "shinimamiya": [
+      "osaka",
+      937,
+      1558
+    ],
+    "sumiyoshitaisha": [
+      "osaka",
+      785,
+      2152
+    ],
+    "kix": [
+      "kansai",
+      766,
+      1656
+    ],
+    "wide-kyoto": [
+      "kansai",
+      1794,
+      392
+    ],
+    "wide-osaka": [
+      "kansai",
+      1274,
+      961
+    ],
+    "wide-shinimamiya": [
+      "kansai",
+      1307,
+      1303
+    ]
+  },
+  "journeys": {
+    "guide-9": {
+      "variants": [
+        {
+          "label": "抵達接駁",
+          "region": "kansai",
+          "nodes": [
+            {
+              "name": "關西機場 T2",
+              "action": "上車",
+              "info": "1F 免費連絡巴士站"
+            },
+            {
+              "name": "Aeroplaza 1F",
+              "action": "下車",
+              "info": "循 Railway／鉄道指標"
+            },
+            {
+              "name": "JR 關西空港站",
+              "action": "進站",
+              "info": "走 JR 閘門，準備 HARUKA 票券",
+              "anchor": "kix"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "bus",
+              "line": "免費航廈接駁",
+              "direction": "Aeroplaza／第1航廈方向"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至鐵路站",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "官方鐵路圖只標關西空港站；T2 接駁站與步行路線未繪在圖上。"
+        }
+      ]
+    },
+    "guide-10": {
+      "variants": [
+        {
+          "label": "HARUKA 直達",
+          "region": "kansai",
+          "nodes": [
+            {
+              "name": "JR 關西空港站",
+              "action": "上車",
+              "info": "15:44；看票券、班次及車廂",
+              "anchor": "kix"
+            },
+            {
+              "name": "JR 京都站",
+              "action": "下車",
+              "info": "17:04 抵達，不需轉車",
+              "anchor": "wide-kyoto"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "特急 HARUKA",
+              "direction": "往京都"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  766,
+                  1656
+                ],
+                [
+                  881,
+                  1751
+                ],
+                [
+                  915,
+                  1787
+                ],
+                [
+                  915,
+                  1880
+                ],
+                [
+                  1055,
+                  1880
+                ],
+                [
+                  1150,
+                  1787
+                ],
+                [
+                  1150,
+                  1620
+                ],
+                [
+                  1195,
+                  1520
+                ],
+                [
+                  1220,
+                  1360
+                ],
+                [
+                  1220,
+                  1282
+                ],
+                [
+                  1180,
+                  1220
+                ],
+                [
+                  1148,
+                  1130
+                ],
+                [
+                  1148,
+                  1078
+                ],
+                [
+                  1210,
+                  1013
+                ],
+                [
+                  1274,
+                  961
+                ],
+                [
+                  1308,
+                  832
+                ],
+                [
+                  1355,
+                  727
+                ],
+                [
+                  1465,
+                  640
+                ],
+                [
+                  1524,
+                  579
+                ],
+                [
+                  1615,
+                  490
+                ],
+                [
+                  1700,
+                  407
+                ],
+                [
+                  1794,
+                  392
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": "高亮為同一班 HARUKA 的路線示意；沿途線條經過的車站不代表此班次停靠。"
+        }
+      ]
+    },
+    "guide-11": {
+      "variants": [
+        {
+          "label": "JR 轉京阪",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "JR 京都站",
+              "action": "上車",
+              "info": "奈良線普通車",
+              "anchor": "kyoto-jr"
+            },
+            {
+              "name": "東福寺",
+              "action": "轉乘",
+              "info": "JR 出閘 → 京阪進閘",
+              "anchor": "tofukuji"
+            },
+            {
+              "name": "清水五條",
+              "action": "下車",
+              "info": "京阪普通／準急",
+              "anchor": "kiyomizu"
+            },
+            {
+              "name": "京都住宿",
+              "action": "步行",
+              "info": "西御門町440-10"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "JR 奈良線普通",
+              "direction": "往奈良／城陽"
+            },
+            {
+              "mode": "train",
+              "line": "京阪普通／準急",
+              "direction": "往三条・出町柳"
+            },
+            {
+              "mode": "walk",
+              "line": "步行回住宿",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1180,
+                  1368
+                ],
+                [
+                  1290,
+                  1368
+                ],
+                [
+                  1360,
+                  1390
+                ],
+                [
+                  1400,
+                  1440
+                ],
+                [
+                  1422,
+                  1490
+                ],
+                [
+                  1422,
+                  1551
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1412,
+                  1551
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1188
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-12": {
+      "variants": [
+        {
+          "label": "步行到晚餐",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "京都住宿",
+              "action": "出發",
+              "info": "西御門町440-10"
+            },
+            {
+              "name": "天壇祇園本店",
+              "action": "抵達",
+              "info": "18:50前到店；19:00用餐"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行約10～20分",
+              "direction": "往祇園四條／宮川筋1-225"
+            }
+          ],
+          "traces": [],
+          "note": "這段不用搭電車；街道與餐廳位置未收錄於鐵路圖。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-13": {
+      "variants": [
+        {
+          "label": "去宇治",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "清水五條",
+              "action": "上車",
+              "info": "2號月台，普通／準急",
+              "anchor": "kiyomizu"
+            },
+            {
+              "name": "中書島",
+              "action": "轉乘",
+              "info": "留在站內，循宇治線指標至3・4號月台",
+              "anchor": "chushojima"
+            },
+            {
+              "name": "京阪宇治",
+              "action": "下車",
+              "info": "勿搭成JR宇治",
+              "anchor": "uji"
+            },
+            {
+              "name": "平等院",
+              "action": "步行",
+              "info": "出站後導航至參道"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪本線",
+              "direction": "往淀屋橋"
+            },
+            {
+              "mode": "train",
+              "line": "京阪宇治線",
+              "direction": "往宇治"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至平等院",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1464,
+                  1188
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1412,
+                  1551
+                ],
+                [
+                  1332,
+                  1551
+                ],
+                [
+                  1285,
+                  1565
+                ],
+                [
+                  1262,
+                  1606
+                ],
+                [
+                  1262,
+                  1658
+                ],
+                [
+                  1262,
+                  1714
+                ],
+                [
+                  1262,
+                  1771
+                ],
+                [
+                  1262,
+                  1810
+                ],
+                [
+                  1261,
+                  1866
+                ],
+                [
+                  1261,
+                  1905
+                ],
+                [
+                  1235,
+                  1930
+                ],
+                [
+                  1175,
+                  1956
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1175,
+                  1956
+                ],
+                [
+                  1375,
+                  1956
+                ],
+                [
+                  1565,
+                  1956
+                ],
+                [
+                  1680,
+                  1956
+                ],
+                [
+                  1734,
+                  1975
+                ],
+                [
+                  1734,
+                  2055
+                ],
+                [
+                  1734,
+                  2090
+                ],
+                [
+                  1734,
+                  2140
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-14": {
+      "variants": [
+        {
+          "label": "宇治到伏見",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "京阪宇治",
+              "action": "上車",
+              "info": "宇治線",
+              "anchor": "uji"
+            },
+            {
+              "name": "中書島",
+              "action": "下車",
+              "info": "出站後步行",
+              "anchor": "chushojima"
+            },
+            {
+              "name": "伏見酒藏街／十石舟",
+              "action": "步行",
+              "info": "13:40船前報到；船班仍依預約確認"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪宇治線",
+              "direction": "往中書島"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至酒藏街、乘船處",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1734,
+                  2140
+                ],
+                [
+                  1734,
+                  2090
+                ],
+                [
+                  1734,
+                  2055
+                ],
+                [
+                  1734,
+                  1975
+                ],
+                [
+                  1680,
+                  1956
+                ],
+                [
+                  1565,
+                  1956
+                ],
+                [
+                  1375,
+                  1956
+                ],
+                [
+                  1175,
+                  1956
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-15": {
+      "variants": [
+        {
+          "label": "京阪轉近鐵",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "中書島",
+              "action": "上車",
+              "info": "回京阪本線",
+              "anchor": "chushojima"
+            },
+            {
+              "name": "丹波橋",
+              "action": "出閘轉乘",
+              "info": "離開京阪，循近鐵指標",
+              "anchor": "tambabashi"
+            },
+            {
+              "name": "近鐵丹波橋",
+              "action": "進站",
+              "info": "選有停東寺的普通車",
+              "anchor": "kintetsu-tambabashi"
+            },
+            {
+              "name": "東寺站",
+              "action": "下車",
+              "info": "步行至寺院",
+              "anchor": "toji"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪本線",
+              "direction": "往出町柳"
+            },
+            {
+              "mode": "walk",
+              "line": "站間轉乘，分別過閘",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "近鐵京都線普通",
+              "direction": "往京都"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1175,
+                  1956
+                ],
+                [
+                  1235,
+                  1930
+                ],
+                [
+                  1261,
+                  1905
+                ],
+                [
+                  1261,
+                  1866
+                ]
+              ]
+            },
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  1261,
+                  1866
+                ],
+                [
+                  1301,
+                  1866
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1301,
+                  1866
+                ],
+                [
+                  1250,
+                  1825
+                ],
+                [
+                  1198,
+                  1790
+                ],
+                [
+                  1100,
+                  1740
+                ],
+                [
+                  1100,
+                  1716
+                ],
+                [
+                  1060,
+                  1660
+                ],
+                [
+                  1033,
+                  1605
+                ],
+                [
+                  1033,
+                  1558
+                ],
+                [
+                  1033,
+                  1474
+                ]
+              ]
+            }
+          ],
+          "note": "不要搭不停東寺的急行／特急。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-16": {
+      "variants": [
+        {
+          "label": "計程車到晚餐",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "東寺寺院附近",
+              "action": "上車",
+              "info": "18:20往出口集合，18:30離寺"
+            },
+            {
+              "name": "但馬屋八條口店",
+              "action": "下車",
+              "info": "京都市南区東九条室町48 J’sビル3F；18:50前到"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車約15～20分",
+              "direction": "京都站八條口"
+            }
+          ],
+          "traces": [],
+          "note": "寺院門口與餐廳不在鐵路圖上；依叫車位置及實際道路行駛。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-17": {
+      "variants": [
+        {
+          "label": "建議：計程車",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "但馬屋八條口店",
+              "action": "上車",
+              "info": "21:00～21:15叫車"
+            },
+            {
+              "name": "京都住宿",
+              "action": "下車",
+              "info": "出示西御門町440-10"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "分乘計程車",
+              "direction": "回京都住宿"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": ""
+        },
+        {
+          "label": "備案：鐵路",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "JR 京都站",
+              "action": "上車",
+              "info": "奈良線普通",
+              "anchor": "kyoto-jr"
+            },
+            {
+              "name": "東福寺",
+              "action": "轉乘",
+              "info": "19:00後走站外：JR出閘 → 京阪進站",
+              "anchor": "tofukuji"
+            },
+            {
+              "name": "清水五條",
+              "action": "下車",
+              "info": "再步行回住宿",
+              "anchor": "kiyomizu"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "JR 奈良線普通",
+              "direction": "往奈良／城陽"
+            },
+            {
+              "mode": "train",
+              "line": "京阪普通／準急",
+              "direction": "往出町柳"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1180,
+                  1368
+                ],
+                [
+                  1290,
+                  1368
+                ],
+                [
+                  1360,
+                  1390
+                ],
+                [
+                  1400,
+                  1440
+                ],
+                [
+                  1422,
+                  1490
+                ],
+                [
+                  1422,
+                  1551
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1412,
+                  1551
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1188
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-18": {
+      "variants": [
+        {
+          "label": "去程：伏見稻荷",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "清水五條",
+              "action": "上車",
+              "info": "2號月台，普通／準急",
+              "anchor": "kiyomizu"
+            },
+            {
+              "name": "京阪伏見稻荷",
+              "action": "下車",
+              "info": "步行到大社；不是JR稻荷",
+              "anchor": "fushimi-inari"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪本線",
+              "direction": "往淀屋橋"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1464,
+                  1188
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1412,
+                  1551
+                ],
+                [
+                  1332,
+                  1551
+                ],
+                [
+                  1285,
+                  1565
+                ],
+                [
+                  1262,
+                  1606
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        },
+        {
+          "label": "回程：清水寺、祇園",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "京阪伏見稻荷",
+              "action": "上車",
+              "info": "1號月台",
+              "anchor": "fushimi-inari"
+            },
+            {
+              "name": "清水五條",
+              "action": "下車",
+              "info": "再步行上坡",
+              "anchor": "kiyomizu"
+            },
+            {
+              "name": "清水寺 → 三年坂 → 祇園",
+              "action": "步行",
+              "info": "清水五條到清水寺約25～35分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪普通／準急",
+              "direction": "往出町柳"
+            },
+            {
+              "mode": "walk",
+              "line": "東山散步路線",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1262,
+                  1606
+                ],
+                [
+                  1285,
+                  1565
+                ],
+                [
+                  1332,
+                  1551
+                ],
+                [
+                  1412,
+                  1551
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1188
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-19": {
+      "variants": [
+        {
+          "label": "赴但馬屋晚餐",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "祇園四條",
+              "action": "上車",
+              "info": "18:00前離開祇園",
+              "anchor": "gion"
+            },
+            {
+              "name": "東福寺",
+              "action": "轉乘",
+              "info": "京阪出閘 → JR進站",
+              "anchor": "tofukuji"
+            },
+            {
+              "name": "JR 京都站",
+              "action": "下車",
+              "info": "走八條口",
+              "anchor": "kyoto-jr"
+            },
+            {
+              "name": "但馬屋八條口店",
+              "action": "步行",
+              "info": "18:50前到；19:00用餐"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "京阪本線",
+              "direction": "往淀屋橋"
+            },
+            {
+              "mode": "train",
+              "line": "JR 奈良線普通",
+              "direction": "往京都"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至八條口餐廳",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1464,
+                  1086
+                ],
+                [
+                  1464,
+                  1188
+                ],
+                [
+                  1464,
+                  1288
+                ],
+                [
+                  1464,
+                  1438
+                ],
+                [
+                  1450,
+                  1510
+                ],
+                [
+                  1412,
+                  1551
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1422,
+                  1551
+                ],
+                [
+                  1422,
+                  1490
+                ],
+                [
+                  1400,
+                  1440
+                ],
+                [
+                  1360,
+                  1390
+                ],
+                [
+                  1290,
+                  1368
+                ],
+                [
+                  1180,
+                  1368
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-20": {
+      "variants": [
+        {
+          "label": "計程車到大德寺",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "京都住宿",
+              "action": "上車",
+              "info": "08:10～08:25上車，先分好車"
+            },
+            {
+              "name": "大德寺",
+              "action": "下車",
+              "info": "09:00前到"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "出示「大徳寺」"
+            }
+          ],
+          "traces": [],
+          "note": "住宿與大德寺未標於官方鐵路圖；不以鐵路站代替目的地。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-21": {
+      "variants": [
+        {
+          "label": "204巴士",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "今宮神社",
+              "action": "步行",
+              "info": "回大徳寺前約10～15分"
+            },
+            {
+              "name": "大徳寺前",
+              "action": "上車",
+              "info": "11:10～11:30估排"
+            },
+            {
+              "name": "銀閣寺道",
+              "action": "下車",
+              "info": "後門上、前門下，下車付款"
+            },
+            {
+              "name": "銀閣寺參道",
+              "action": "步行",
+              "info": "下車再步行"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行回站牌",
+              "direction": ""
+            },
+            {
+              "mode": "bus",
+              "line": "京都市巴士204",
+              "direction": "往高野・銀閣寺"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至參道",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "巴士站與道路不在這張鐵路圖上；不要搭「金閣寺・円町」反方向。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-22": {
+      "variants": [
+        {
+          "label": "哲學之道散步",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "銀閣寺",
+              "action": "出發",
+              "info": "13:30左右離開"
+            },
+            {
+              "name": "永觀堂",
+              "action": "步行",
+              "info": "沿哲學之道往南約50分"
+            },
+            {
+              "name": "南禪寺水路閣",
+              "action": "步行",
+              "info": "永觀堂後再步行約10～15分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "哲學之道",
+              "direction": "往南"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至南禪寺",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "這段以步行為主，不需搭車；街道位置請開啟步行導航。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-23": {
+      "variants": [
+        {
+          "label": "地鐵轉京阪",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "南禪寺",
+              "action": "步行",
+              "info": "走到蹴上站"
+            },
+            {
+              "name": "蹴上",
+              "action": "上車",
+              "info": "地下鐵東西線",
+              "anchor": "keage"
+            },
+            {
+              "name": "三条京阪",
+              "action": "出閘轉乘",
+              "info": "出地下鐵閘門",
+              "anchor": "sanjo-keihan"
+            },
+            {
+              "name": "京阪三条",
+              "action": "進站",
+              "info": "循京阪指標",
+              "anchor": "sanjo"
+            },
+            {
+              "name": "清水五條",
+              "action": "下車",
+              "info": "步行回京都住宿",
+              "anchor": "kiyomizu"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至蹴上",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "地下鐵東西線",
+              "direction": "往太秦天神川"
+            },
+            {
+              "mode": "walk",
+              "line": "出閘轉京阪三条",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "京阪普通／準急",
+              "direction": "往淀屋橋"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1807,
+                  976
+                ],
+                [
+                  1807,
+                  970
+                ],
+                [
+                  1800,
+                  940
+                ],
+                [
+                  1780,
+                  923
+                ],
+                [
+                  1497,
+                  923
+                ]
+              ]
+            },
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  1497,
+                  923
+                ],
+                [
+                  1464,
+                  950
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1464,
+                  950
+                ],
+                [
+                  1464,
+                  1086
+                ],
+                [
+                  1464,
+                  1188
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-24": {
+      "variants": [
+        {
+          "label": "去高雄",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "京都住宿",
+              "action": "上車",
+              "info": "07:15～07:30叫車"
+            },
+            {
+              "name": "京都站烏丸口／JR3",
+              "action": "轉乘",
+              "info": "站外JR巴士乘車處；不是鐵路第3月台",
+              "anchor": "kyoto-jr"
+            },
+            {
+              "name": "高雄巴士站",
+              "action": "下車",
+              "info": "預留秋季塞車及候車"
+            },
+            {
+              "name": "神護寺",
+              "action": "步行",
+              "info": "階梯上山約30分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "京都駅烏丸口"
+            },
+            {
+              "mode": "bus",
+              "line": "西日本JR巴士 高雄京北線",
+              "direction": "往栂ノ尾／周山，確認經過高雄"
+            },
+            {
+              "mode": "walk",
+              "line": "上山參拜",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "圖上標的是京都站參考位置；JR3在站外。高雄巴士路線及站牌精確位置未繪於鐵路圖。"
+        }
+      ]
+    },
+    "guide-25": {
+      "variants": [
+        {
+          "label": "高雄三尾步行",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "高雄巴士站",
+              "action": "出發",
+              "info": "上神護寺階梯約30分"
+            },
+            {
+              "name": "神護寺",
+              "action": "步行",
+              "info": "參拜後下山"
+            },
+            {
+              "name": "西明寺",
+              "action": "步行",
+              "info": "神護寺後約35～45分"
+            },
+            {
+              "name": "高山寺",
+              "action": "步行",
+              "info": "西明寺後約20～30分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行上山",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "下山後依指標",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "依高山寺指標",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "三寺步道不在鐵路圖上，請依現地路標及步行導航。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-26": {
+      "variants": [
+        {
+          "label": "高雄回住宿",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "高山寺",
+              "action": "步行",
+              "info": "步行至栂ノ尾站牌"
+            },
+            {
+              "name": "栂ノ尾巴士站",
+              "action": "上車",
+              "info": "15:20～15:50估排"
+            },
+            {
+              "name": "京都駅前",
+              "action": "下車",
+              "info": "含候車與塞車估75～100分",
+              "anchor": "kyoto-jr"
+            },
+            {
+              "name": "京都住宿",
+              "action": "上車／抵達",
+              "info": "在京都站改計程車回住宿"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至站牌",
+              "direction": ""
+            },
+            {
+              "mode": "bus",
+              "line": "西日本JR巴士",
+              "direction": "京都駅前行き"
+            },
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "西御門町440-10"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "圖上只標京都站參考位置；栂ノ尾巴士及住宿道路路線未繪於圖上。"
+        }
+      ]
+    },
+    "guide-27": {
+      "variants": [
+        {
+          "label": "去新風館",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "麵屋豬一本店",
+              "action": "出發",
+              "info": "先依整理券指定時間安排"
+            },
+            {
+              "name": "新風館",
+              "action": "步行",
+              "info": "Le Labo／BEAMS JAPAN 京都"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行約25～30分",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": ""
+        },
+        {
+          "label": "回豬一",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "新風館",
+              "action": "出發",
+              "info": "預留回店時間"
+            },
+            {
+              "name": "麵屋豬一本店",
+              "action": "步行",
+              "info": "依整理券時間用餐"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "原路步行約25～30分",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-28": {
+      "variants": [
+        {
+          "label": "計程車賞楓",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "麵屋豬一本店附近",
+              "action": "上車",
+              "info": "13:45後含叫車預留1小時"
+            },
+            {
+              "name": "永觀堂",
+              "action": "下車",
+              "info": "出示「永観堂 禅林寺」"
+            },
+            {
+              "name": "南禪寺水路閣",
+              "action": "步行",
+              "info": "可選；約10～15分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "直達永觀堂"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至南禪寺",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-29": {
+      "variants": [
+        {
+          "label": "地鐵轉京阪",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "南禪寺",
+              "action": "步行",
+              "info": "走到蹴上站"
+            },
+            {
+              "name": "蹴上",
+              "action": "上車",
+              "info": "地下鐵東西線",
+              "anchor": "keage"
+            },
+            {
+              "name": "三条京阪",
+              "action": "出閘轉乘",
+              "info": "出地下鐵閘門",
+              "anchor": "sanjo-keihan"
+            },
+            {
+              "name": "京阪三条",
+              "action": "進站",
+              "info": "循京阪指標",
+              "anchor": "sanjo"
+            },
+            {
+              "name": "清水五條",
+              "action": "下車",
+              "info": "步行回京都住宿",
+              "anchor": "kiyomizu"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至蹴上",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "地下鐵東西線",
+              "direction": "往太秦天神川"
+            },
+            {
+              "mode": "walk",
+              "line": "出閘轉京阪三条",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "京阪普通／準急",
+              "direction": "往淀屋橋"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1807,
+                  976
+                ],
+                [
+                  1807,
+                  970
+                ],
+                [
+                  1800,
+                  940
+                ],
+                [
+                  1780,
+                  923
+                ],
+                [
+                  1497,
+                  923
+                ]
+              ]
+            },
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  1497,
+                  923
+                ],
+                [
+                  1464,
+                  950
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1464,
+                  950
+                ],
+                [
+                  1464,
+                  1086
+                ],
+                [
+                  1464,
+                  1188
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        },
+        {
+          "label": "備案：計程車",
+          "region": "kyoto",
+          "nodes": [
+            {
+              "name": "南禪寺附近",
+              "action": "上車",
+              "info": "確認可停靠上車處"
+            },
+            {
+              "name": "京都住宿",
+              "action": "下車",
+              "info": "出示西御門町440-10"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "回京都住宿"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-30": {
+      "variants": [
+        {
+          "label": "京都移動大阪",
+          "region": "kansai",
+          "nodes": [
+            {
+              "name": "京都住宿",
+              "action": "上車",
+              "info": "退房後帶行李"
+            },
+            {
+              "name": "JR 京都站",
+              "action": "轉乘",
+              "info": "JR京都線新快速",
+              "anchor": "wide-kyoto"
+            },
+            {
+              "name": "JR 大阪站",
+              "action": "下車",
+              "info": "出閘找Crosta",
+              "anchor": "wide-osaka"
+            },
+            {
+              "name": "Crosta 大阪",
+              "action": "步行",
+              "info": "09:45～10:15寄物估排"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "taxi",
+              "line": "計程車",
+              "direction": "京都站"
+            },
+            {
+              "mode": "train",
+              "line": "JR 京都線新快速",
+              "direction": "大阪・三ノ宮方面"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至寄物櫃台",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1794,
+                  392
+                ],
+                [
+                  1700,
+                  407
+                ],
+                [
+                  1615,
+                  490
+                ],
+                [
+                  1524,
+                  579
+                ],
+                [
+                  1465,
+                  640
+                ],
+                [
+                  1355,
+                  727
+                ],
+                [
+                  1308,
+                  832
+                ],
+                [
+                  1274,
+                  961
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-31": {
+      "variants": [
+        {
+          "label": "梅田到箕面萱野",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "JR 大阪站",
+              "action": "出站步行",
+              "info": "與地下鐵梅田是不同閘口",
+              "anchor": "osaka-jr"
+            },
+            {
+              "name": "地下鐵梅田",
+              "action": "上車",
+              "info": "選直通箕面萱野的車",
+              "anchor": "umeda"
+            },
+            {
+              "name": "箕面萱野",
+              "action": "下車",
+              "info": "不用在江坂換車",
+              "anchor": "mino-kayano"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "站內外循御堂筋線標示",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "御堂筋線・北大阪急行",
+              "direction": "箕面萱野ゆき"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  799,
+                  797
+                ],
+                [
+                  849,
+                  837
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  849,
+                  837
+                ],
+                [
+                  849,
+                  12
+                ]
+              ]
+            }
+          ],
+          "note": "不要搭僅到中津、新大阪或江坂的區間車。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-32": {
+      "variants": [
+        {
+          "label": "去勝尾寺",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "箕面萱野站",
+              "action": "步行",
+              "info": "到8番のりば",
+              "anchor": "mino-kayano"
+            },
+            {
+              "name": "8號乘車處",
+              "action": "上車",
+              "info": "30系統；中門上車刷IC"
+            },
+            {
+              "name": "勝尾寺",
+              "action": "下車",
+              "info": "前門下車再刷IC"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至8號站牌",
+              "direction": ""
+            },
+            {
+              "mode": "bus",
+              "line": "阪急巴士30系統",
+              "direction": "勝尾寺方向"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "鐵路圖只標箕面萱野站；8號站牌與勝尾寺巴士道路沒有繪在圖內。"
+        },
+        {
+          "label": "回箕面萱野",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "勝尾寺巴士站",
+              "action": "上車",
+              "info": "依回程班次排隊"
+            },
+            {
+              "name": "箕面萱野站",
+              "action": "下車",
+              "info": "轉御堂筋線回梅田",
+              "anchor": "mino-kayano"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "bus",
+              "line": "阪急巴士",
+              "direction": "箕面萱野駅方向"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "鐵路圖只標箕面萱野站；巴士行駛路線未繪於圖上。"
+        }
+      ]
+    },
+    "guide-33": {
+      "variants": [
+        {
+          "label": "箕面萱野回梅田",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "箕面萱野",
+              "action": "上車",
+              "info": "巴士下車後步行進鐵路站",
+              "anchor": "mino-kayano"
+            },
+            {
+              "name": "梅田",
+              "action": "下車",
+              "info": "大阪市中心",
+              "anchor": "umeda"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "北大阪急行・御堂筋線直通",
+              "direction": "天王寺／なかもず方向"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  849,
+                  12
+                ],
+                [
+                  849,
+                  837
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-34": {
+      "variants": [
+        {
+          "label": "取行李後回住宿",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "Crosta 大阪",
+              "action": "出發",
+              "info": "19:15～19:35取行李"
+            },
+            {
+              "name": "西梅田",
+              "action": "上車",
+              "info": "四橋線，不是御堂筋線梅田",
+              "anchor": "nishiumeda"
+            },
+            {
+              "name": "花園町",
+              "action": "下車",
+              "info": "確認站名",
+              "anchor": "hanazonocho"
+            },
+            {
+              "name": "大阪住宿",
+              "action": "步行",
+              "info": "鶴見橋1丁目17-5；約8～12分"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "循四つ橋線／西梅田指標",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "四橋線",
+              "direction": "住之江公園方面"
+            },
+            {
+              "mode": "walk",
+              "line": "步行回住宿",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  792,
+                  850
+                ],
+                [
+                  775,
+                  864
+                ],
+                [
+                  764,
+                  900
+                ],
+                [
+                  764,
+                  1080
+                ],
+                [
+                  764,
+                  1189
+                ],
+                [
+                  764,
+                  1240
+                ],
+                [
+                  774,
+                  1284
+                ],
+                [
+                  774,
+                  1387
+                ],
+                [
+                  774,
+                  1430
+                ],
+                [
+                  800,
+                  1490
+                ],
+                [
+                  817,
+                  1521
+                ],
+                [
+                  817,
+                  1647
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-35": {
+      "variants": [
+        {
+          "label": "去USJ",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "大阪住宿",
+              "action": "步行",
+              "info": "06:30出發，走12～15分"
+            },
+            {
+              "name": "JR 今宮",
+              "action": "上車",
+              "info": "不是南海今宮戎",
+              "anchor": "imamiya"
+            },
+            {
+              "name": "西九条",
+              "action": "轉乘",
+              "info": "留在JR閘內，循夢咲線標示",
+              "anchor": "nishikujo"
+            },
+            {
+              "name": "Universal City",
+              "action": "下車",
+              "info": "步行約10分至USJ",
+              "anchor": "universal-city"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至JR今宮",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "大阪環狀線普通",
+              "direction": "大正・西九条方向"
+            },
+            {
+              "mode": "train",
+              "line": "JR 夢咲線",
+              "direction": "桜島方向"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  706,
+                  1541
+                ],
+                [
+                  637,
+                  1500
+                ],
+                [
+                  550,
+                  1450
+                ],
+                [
+                  486,
+                  1408
+                ],
+                [
+                  440,
+                  1330
+                ],
+                [
+                  422,
+                  1240
+                ],
+                [
+                  422,
+                  1189
+                ],
+                [
+                  422,
+                  1140
+                ],
+                [
+                  445,
+                  1060
+                ],
+                [
+                  471,
+                  1018
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  471,
+                  1018
+                ],
+                [
+                  430,
+                  1047
+                ],
+                [
+                  357,
+                  1047
+                ],
+                [
+                  292,
+                  1047
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-36": {
+      "variants": [
+        {
+          "label": "USJ回住宿",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "Universal City",
+              "action": "上車",
+              "info": "散場人多預留時間",
+              "anchor": "universal-city"
+            },
+            {
+              "name": "西九条",
+              "action": "轉乘",
+              "info": "JR閘內換環狀線普通",
+              "anchor": "nishikujo"
+            },
+            {
+              "name": "JR 今宮",
+              "action": "下車",
+              "info": "確認列車停今宮",
+              "anchor": "imamiya"
+            },
+            {
+              "name": "大阪住宿",
+              "action": "步行",
+              "info": "鶴見橋1丁目17-5"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "JR 夢咲線",
+              "direction": "西九条方向"
+            },
+            {
+              "mode": "train",
+              "line": "大阪環狀線普通",
+              "direction": "大正・今宮方向"
+            },
+            {
+              "mode": "walk",
+              "line": "步行回住宿",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  292,
+                  1047
+                ],
+                [
+                  357,
+                  1047
+                ],
+                [
+                  430,
+                  1047
+                ],
+                [
+                  471,
+                  1018
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  471,
+                  1018
+                ],
+                [
+                  445,
+                  1060
+                ],
+                [
+                  422,
+                  1140
+                ],
+                [
+                  422,
+                  1189
+                ],
+                [
+                  422,
+                  1240
+                ],
+                [
+                  440,
+                  1330
+                ],
+                [
+                  486,
+                  1408
+                ],
+                [
+                  550,
+                  1450
+                ],
+                [
+                  637,
+                  1500
+                ],
+                [
+                  706,
+                  1541
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-37": {
+      "variants": [
+        {
+          "label": "經難波去住吉大社",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "花園町",
+              "action": "上車",
+              "info": "四橋線",
+              "anchor": "hanazonocho"
+            },
+            {
+              "name": "四橋線難波",
+              "action": "出閘轉乘",
+              "info": "步行到南海なんば",
+              "anchor": "namba-y"
+            },
+            {
+              "name": "南海難波",
+              "action": "進站",
+              "info": "選本線普通車",
+              "anchor": "namba-nankai"
+            },
+            {
+              "name": "住吉大社站",
+              "action": "下車",
+              "info": "步行至神社",
+              "anchor": "sumiyoshitaisha"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "四橋線",
+              "direction": "西梅田方面"
+            },
+            {
+              "mode": "walk",
+              "line": "站區步行，重新進閘",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "南海本線普通",
+              "direction": "往南，確認停住吉大社"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  817,
+                  1647
+                ],
+                [
+                  817,
+                  1521
+                ],
+                [
+                  800,
+                  1490
+                ],
+                [
+                  774,
+                  1430
+                ],
+                [
+                  774,
+                  1387
+                ]
+              ]
+            },
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  774,
+                  1387
+                ],
+                [
+                  865,
+                  1434
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  865,
+                  1434
+                ],
+                [
+                  890,
+                  1460
+                ],
+                [
+                  937,
+                  1485
+                ],
+                [
+                  937,
+                  1558
+                ],
+                [
+                  937,
+                  1630
+                ],
+                [
+                  937,
+                  1740
+                ],
+                [
+                  937,
+                  1840
+                ],
+                [
+                  937,
+                  1968
+                ],
+                [
+                  937,
+                  2050
+                ],
+                [
+                  885,
+                  2085
+                ],
+                [
+                  837,
+                  2110
+                ],
+                [
+                  785,
+                  2152
+                ]
+              ]
+            }
+          ],
+          "note": "不搭高野線、空港急行或特急；直接從南海新今宮搭本線普通也是備案。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-38": {
+      "variants": [
+        {
+          "label": "住吉大社到中津",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "住吉大社站",
+              "action": "上車",
+              "info": "南海普通車",
+              "anchor": "sumiyoshitaisha"
+            },
+            {
+              "name": "南海難波",
+              "action": "出閘轉乘",
+              "info": "步行至地下鐵御堂筋線",
+              "anchor": "namba-nankai"
+            },
+            {
+              "name": "地下鐵難波",
+              "action": "進站",
+              "info": "御堂筋線往北",
+              "anchor": "namba-m"
+            },
+            {
+              "name": "地下鐵中津",
+              "action": "下車",
+              "info": "再步行至麦と麺助",
+              "anchor": "nakatsu"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "南海本線普通",
+              "direction": "なんば方面"
+            },
+            {
+              "mode": "walk",
+              "line": "分別過閘轉地下鐵",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "御堂筋線",
+              "direction": "箕面萱野／新大阪方向"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  785,
+                  2152
+                ],
+                [
+                  837,
+                  2110
+                ],
+                [
+                  885,
+                  2085
+                ],
+                [
+                  937,
+                  2050
+                ],
+                [
+                  937,
+                  1968
+                ],
+                [
+                  937,
+                  1840
+                ],
+                [
+                  937,
+                  1740
+                ],
+                [
+                  937,
+                  1630
+                ],
+                [
+                  937,
+                  1558
+                ],
+                [
+                  937,
+                  1485
+                ],
+                [
+                  890,
+                  1460
+                ],
+                [
+                  865,
+                  1434
+                ]
+              ]
+            },
+            {
+              "mode": "walk",
+              "points": [
+                [
+                  865,
+                  1434
+                ],
+                [
+                  849,
+                  1387
+                ]
+              ]
+            },
+            {
+              "mode": "train",
+              "points": [
+                [
+                  849,
+                  1387
+                ],
+                [
+                  849,
+                  716
+                ]
+              ]
+            }
+          ],
+          "note": "這是御堂筋線中津，不是阪急中津。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-39": {
+      "variants": [
+        {
+          "label": "梅田步行逛街",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "麦と麺助",
+              "action": "出發",
+              "info": "午餐後"
+            },
+            {
+              "name": "OSA COFFEE → grenier",
+              "action": "步行",
+              "info": "中崎町周邊"
+            },
+            {
+              "name": "HEP FIVE → 阪急梅田 → LUCUA",
+              "action": "步行",
+              "info": "依購物時間與集合彈性調整"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至咖啡、甜點店",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "步行逛梅田商圈",
+              "direction": ""
+            }
+          ],
+          "traces": [],
+          "note": "店與店之間以步行為主，請分段導航；鐵路圖沒有店家與街道位置。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-40": {
+      "variants": [
+        {
+          "label": "梅田到堀江",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "西梅田",
+              "action": "上車",
+              "info": "四橋線",
+              "anchor": "nishiumeda"
+            },
+            {
+              "name": "四ツ橋",
+              "action": "下車",
+              "info": "不是四橋線難波",
+              "anchor": "yotsubashi"
+            },
+            {
+              "name": "橘子街／堀江",
+              "action": "步行",
+              "info": "之後步行往心齋橋、道頓堀"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "四橋線",
+              "direction": "住之江公園方向"
+            },
+            {
+              "mode": "walk",
+              "line": "步行至橘子街",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  792,
+                  850
+                ],
+                [
+                  775,
+                  864
+                ],
+                [
+                  764,
+                  900
+                ],
+                [
+                  764,
+                  1080
+                ],
+                [
+                  764,
+                  1189
+                ],
+                [
+                  764,
+                  1240
+                ],
+                [
+                  774,
+                  1284
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-41": {
+      "variants": [
+        {
+          "label": "難波回住宿",
+          "region": "osaka",
+          "nodes": [
+            {
+              "name": "四橋線難波",
+              "action": "上車",
+              "info": "不是南海難波或御堂筋線難波",
+              "anchor": "namba-y"
+            },
+            {
+              "name": "花園町",
+              "action": "下車",
+              "info": "約8～12分步行回住宿",
+              "anchor": "hanazonocho"
+            },
+            {
+              "name": "大阪住宿",
+              "action": "步行",
+              "info": "鶴見橋1丁目17-5"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "train",
+              "line": "四橋線",
+              "direction": "住之江公園方向"
+            },
+            {
+              "mode": "walk",
+              "line": "步行回住宿",
+              "direction": ""
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  774,
+                  1387
+                ],
+                [
+                  774,
+                  1430
+                ],
+                [
+                  800,
+                  1490
+                ],
+                [
+                  817,
+                  1521
+                ],
+                [
+                  817,
+                  1647
+                ]
+              ]
+            }
+          ],
+          "note": "",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-42": {
+      "variants": [
+        {
+          "label": "南海空港急行",
+          "region": "kansai",
+          "nodes": [
+            {
+              "name": "大阪住宿",
+              "action": "步行／叫車",
+              "info": "10:00出發；步行20～25分或計程車5～10分"
+            },
+            {
+              "name": "南海新今宮",
+              "action": "上車",
+              "info": "10:30前到月台；走南海閘門",
+              "anchor": "wide-shinimamiya"
+            },
+            {
+              "name": "關西空港站",
+              "action": "下車",
+              "info": "接著轉免費巴士去T2",
+              "anchor": "kix"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "前往南海新今宮",
+              "direction": ""
+            },
+            {
+              "mode": "train",
+              "line": "南海空港急行",
+              "direction": "関西空港ゆき"
+            }
+          ],
+          "traces": [
+            {
+              "mode": "train",
+              "points": [
+                [
+                  1307,
+                  1303
+                ],
+                [
+                  1314,
+                  1374
+                ],
+                [
+                  1314,
+                  1494
+                ],
+                [
+                  1195,
+                  1613
+                ],
+                [
+                  1195,
+                  1742
+                ],
+                [
+                  1150,
+                  1787
+                ],
+                [
+                  917,
+                  1787
+                ],
+                [
+                  881,
+                  1751
+                ],
+                [
+                  766,
+                  1656
+                ]
+              ]
+            }
+          ],
+          "note": "選關西空港終點，別搭和歌山市行；若改搭Rapi:t須另外準備特急券。",
+          "mapNote": ""
+        }
+      ]
+    },
+    "guide-43": {
+      "variants": [
+        {
+          "label": "轉接駁去T2",
+          "region": "kansai",
+          "nodes": [
+            {
+              "name": "關西空港站",
+              "action": "出閘",
+              "info": "搭完南海後離開車站",
+              "anchor": "kix"
+            },
+            {
+              "name": "Aeroplaza 1F",
+              "action": "步行",
+              "info": "找第2ターミナル／Terminal 2"
+            },
+            {
+              "name": "第2航廈 T2",
+              "action": "下車",
+              "info": "目標12:15，最晚12:30抵達"
+            }
+          ],
+          "edges": [
+            {
+              "mode": "walk",
+              "line": "步行至免費巴士站",
+              "direction": ""
+            },
+            {
+              "mode": "bus",
+              "line": "免費航廈接駁約7～9分",
+              "direction": "Terminal 2"
+            }
+          ],
+          "traces": [],
+          "note": "",
+          "mapNote": "圖內只標關西空港站；T2及免費接駁路線不在鐵路圖中。"
+        }
+      ]
+    }
+  }
+}

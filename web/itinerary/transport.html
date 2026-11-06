@@ -15,9 +15,9 @@
     @media(max-width:360px){.transport-page .page-switch{margin-left:14px;margin-right:14px}.guide-days button{font-size:10px}.guide-content{font-size:13px}}
     @media print{.page-switch,.guide-filter,.guide-search,.guide-groups,.guide-controls,.transport-bottom,.guide-diagram{display:none}.transport-main{max-width:none;padding:0}.guide-card{break-inside:avoid}.guide-content{display:block}.guide-card>summary:after{display:none}}
   </style>
-  <script type="module" src="./travel-tools.js?v=4"></script>
-  <link rel="stylesheet" href="./kyoto-map.css?v=1">
-  <script type="module" src="./kyoto-map.js?v=1"></script>
+  <script type="module" src="./travel-tools.js?v=5"></script>
+  <link rel="stylesheet" href="./kyoto-map.css?v=2">
+  <script type="module" src="./kyoto-map.js?v=2"></script>
 </head>
 <body class="transport-page">
   <a class="skip-link" href="#guide-results">跳到搭車路段</a>
@@ -39,6 +39,7 @@
   <div id="guide-toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p class="noscript">請開啟 JavaScript，或<a href="https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=1116814390#gid=1116814390">查看原始搭車攻略</a>。</p></noscript>
   <script type="module">
+    import {createJourneyButton} from './transit-diagrams.js?v=1';
     const $ = selector => document.querySelector(selector);
     const make = (tag, text, name) => {const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(name)node.className=name;return node;};
     const plans={2:[['all','全部方案'],['b','B・宇治'],['a','A・東山備選']],3:[['all','全部方案'],['a','A・路線 1'],['b','B・高雄三尾'],['special','隱藏・豬一 / 新風館']],5:[['all','全部方案'],['a','A・USJ'],['b','B・自由行 / 隱藏']]};
@@ -54,10 +55,10 @@
       $('#guide-search').value=query;updateReturnLink();
     }
     function card(record){
-      const details=make('details',undefined,'guide-card'),summary=make('summary');summary.append(make('span',record.plan,'guide-plan'),make('h3',record.title),make('p',record.time,'guide-time'));details.append(summary);
+      const details=make('details',undefined,'guide-card'),summary=make('summary');summary.append(make('span',record.plan,'guide-plan'),make('h3',record.title),make('p',record.time,'guide-time'),make('span','展開查看搭乘圖','guide-diagram-cue'));details.append(summary);
       const content=make('div',undefined,'guide-content'),dl=make('dl');dl.append(make('dt','在哪裡上車'),make('dd',record.boarding),make('dt','看哪個方向'),make('dd',record.direction));content.append(dl,make('h4','怎麼搭・在哪裡轉乘'),make('p',record.steps),make('p',record.note,'guide-caution'));
       if(record.userReminder)content.append(make('p',record.userReminder,'guide-caution'));
-      const links=make('div',undefined,'guide-links'),reference=make('a','原表參考連結 ↗');reference.href=record.reference;reference.target='_blank';reference.rel='noopener noreferrer';links.append(reference);content.append(links);details.append(content);details.addEventListener('toggle',updateExpand);return details;
+      const links=make('div',undefined,'guide-links'),reference=make('a','原表參考連結 ↗');reference.href=record.reference;reference.target='_blank';reference.rel='noopener noreferrer';links.append(createJourneyButton(record),reference);content.append(links);details.append(content);details.addEventListener('toggle',updateExpand);return details;
     }
     function updateExpand(){const cards=[...$('#guide-results').querySelectorAll('.guide-card')];const all=cards.length>0&&cards.every(c=>c.open);$('#guide-expand').textContent=all?'收合全部路段':'展開全部路段';$('#guide-expand').setAttribute('aria-expanded',String(all));$('#guide-expand').disabled=cards.length===0;}
     function render(){
