@@ -1,4 +1,4 @@
-import {openRailMap} from './kyoto-map.js?v=2';
+import {openRailMap} from './kyoto-map.js?v=3';
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let loading;
 function load(){return loading ||= Promise.all([fetch('./transport-route-data.json?v=1'),fetch('./transport-data.json?v=1')]).then(async responses=>{if(responses.some(r=>!r.ok))throw Error('read');const [routes,data]=await Promise.all(responses.map(r=>r.json()));return {routes,records:data.records};}).catch(error=>{loading=null;throw error;});}
