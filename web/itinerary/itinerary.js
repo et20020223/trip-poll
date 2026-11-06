@@ -1,4 +1,4 @@
-import {createJourneyButton} from './transit-diagrams.js?v=4';
+import {createJourneyButton} from './transit-diagrams.js?v=5';
 const $ = selector => document.querySelector(selector);
 let itinerary, currentDay, currentRoute, toastTimer;
 const icons={pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',arrow:'M7 17 17 7M7 7h10v10',info:'M12 16v-4m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'};
