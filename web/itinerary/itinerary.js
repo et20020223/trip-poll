@@ -18,7 +18,7 @@ function eventCard(event,day){
   if(event.place){const a=element('a',undefined,'map-link');a.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(mapQuery(event,day));a.target='_blank';a.rel='noopener noreferrer';a.setAttribute('aria-label','地圖：'+event.place);a.append(element('span','地圖'),icon('arrow'));actions.append(a);}
   if(actions.children.length)article.append(actions);item.append(article);return item;
 }
-function stateFromHash(){const p=new URLSearchParams(location.hash.slice(1));const raw=Number(p.get('day'));const day=itinerary.days.find(d=>d.number===raw)||dayForToday();const route=day.variants.some(v=>v.id===p.get('route'))?p.get('route'):day.defaultRoute;return{day,route};}
+function stateFromHash(){const p=new URLSearchParams(location.hash.slice(1));const raw=Number(p.get('day'));const day=itinerary.days.find(d=>d.number===raw)||dayForToday();const requestedRoute=day.number===3&&p.get('route')==='a-detail'?'main':p.get('route');const route=day.variants.some(v=>v.id===requestedRoute)?requestedRoute:day.defaultRoute;if(day.number===3&&p.get('route')==='a-detail'){p.set('route',route);history.replaceState(null,'',location.pathname+location.search+'#'+p);}return{day,route};}
 function dayForToday(){const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());return itinerary.days.find(d=>d.date===today)||itinerary.days[0];}
 function navigate(number,route,scroll=true){const day=itinerary.days.find(d=>d.number===number);if(!day)return;const selected=day.variants.some(v=>v.id===route)?route:day.defaultRoute;const hash=`#day=${number}&route=${selected}`;if(location.hash!==hash)history.pushState(null,'',hash);render(day,selected);if(scroll){$('#day-content').scrollIntoView({block:'start',behavior:'auto'});$('#day-content').focus({preventScroll:true});}}
 function render(day,route){
@@ -36,7 +36,7 @@ function render(day,route){
   $('#previous-day').disabled=day.number===1;$('#next-day').disabled=day.number===itinerary.days.length;
 }
 async function start(){
-  try{const response=await fetch('./itinerary-data.json?v=5');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
+  try{const response=await fetch('./itinerary-data.json?v=6');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
     const {day,route}=stateFromHash();render(day,route);$('#overview-days').replaceChildren();itinerary.days.forEach(d=>{const button=element('button',undefined,'overview-day');button.type='button';const text=element('span');text.append(element('small',`11/${d.date.slice(-2)}（${d.weekday}）`),element('b',d.title));button.append(element('strong',String(d.number).padStart(2,'0')),text,element('span','↗'));button.addEventListener('click',()=>{$('#overview').close();navigate(d.number);});$('#overview-days').append(button);});
     $('#previous-day').onclick=()=>navigate(currentDay.number-1);$('#next-day').onclick=()=>navigate(currentDay.number+1);
   }catch(error){const box=element('div',undefined,'load-error');box.append(element('h2','行程暫時無法讀取'),element('p','請確認網路連線後重試。'));const retry=element('button','重新讀取');retry.onclick=start;box.append(retry);$('#day-content').replaceChildren(box);$('#previous-day').disabled=true;$('#next-day').disabled=true;}
