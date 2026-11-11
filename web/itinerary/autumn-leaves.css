@@ -1,0 +1,11 @@
+.autumn-leaves{position:fixed;inset:0;overflow:hidden;pointer-events:none;user-select:none;z-index:8;contain:strict}
+.autumn-leaves *{pointer-events:none}
+.autumn-leaf-fall{position:absolute;left:var(--leaf-x);top:-70px;width:var(--leaf-size);height:var(--leaf-size);color:var(--leaf-color);opacity:0;animation:autumn-leaf-fall var(--leaf-fall) var(--leaf-delay) linear infinite}
+.autumn-leaf-sway{display:block;width:100%;height:100%;animation:autumn-leaf-sway var(--leaf-sway) var(--leaf-delay) ease-in-out infinite alternate}
+.autumn-leaf-sway svg{display:block;width:100%;height:100%;animation:autumn-leaf-turn var(--leaf-turn) var(--leaf-delay) ease-in-out infinite alternate}
+.autumn-leaves-paused,.autumn-leaves-paused *{animation-play-state:paused!important}
+@keyframes autumn-leaf-fall{0%{transform:translate3d(0,0,0);opacity:0}8%{opacity:.46}88%{opacity:.46}100%{transform:translate3d(5vw,calc(100vh + 140px),0);opacity:0}}
+@keyframes autumn-leaf-sway{from{transform:translateX(-16px)}to{transform:translateX(22px)}}
+@keyframes autumn-leaf-turn{from{transform:rotate(-35deg) rotateY(-28deg)}to{transform:rotate(75deg) rotateY(35deg)}}
+@media(max-width:600px){.autumn-leaf-fall:nth-child(n+4){display:none}.autumn-leaf-fall{width:calc(var(--leaf-size) * .85);height:calc(var(--leaf-size) * .85)}}
+@media(prefers-reduced-motion:reduce),print{.autumn-leaves{display:none}.autumn-leaves *{animation:none!important}}
