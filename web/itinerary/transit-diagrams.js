@@ -1,5 +1,5 @@
 import {createTransportPolicies} from './transport-policies.js?v=2';
-import {openRailMap} from './kyoto-map.js?v=3';
+import {openRailMap} from './kyoto-map.js?v=4';
 import {createBusMapButton} from './bus-maps.js?v=1';
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let loading;
