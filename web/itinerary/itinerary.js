@@ -1,5 +1,5 @@
 import {createTransportPolicies} from './transport-policies.js?v=2';
-import {createJourneyButton,createJourneySteps} from './transit-diagrams.js?v=9';
+import {createJourneyButton,createJourneySteps} from './transit-diagrams.js?v=10';
 const $ = selector => document.querySelector(selector);
 let itinerary, currentDay, currentRoute, toastTimer;
 const icons={pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',arrow:'M7 17 17 7M7 7h10v10',info:'M12 16v-4m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'};
@@ -37,7 +37,7 @@ function render(day,route){
   $('#previous-day').disabled=day.number===1;$('#next-day').disabled=day.number===itinerary.days.length;
 }
 async function start(){
-  try{const response=await fetch('./itinerary-data.json?v=9');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
+  try{const response=await fetch('./itinerary-data.json?v=10');if(!response.ok)throw Error('讀取失敗');itinerary=await response.json();if(!Array.isArray(itinerary.days)||itinerary.days.length!==6)throw Error('資料不完整');
     const {day,route}=stateFromHash();render(day,route);$('#overview-days').replaceChildren();itinerary.days.forEach(d=>{const button=element('button',undefined,'overview-day');button.type='button';const text=element('span');text.append(element('small',`11/${d.date.slice(-2)}（${d.weekday}）`),element('b',d.title));button.append(element('strong',String(d.number).padStart(2,'0')),text,element('span','↗'));button.addEventListener('click',()=>{$('#overview').close();navigate(d.number);});$('#overview-days').append(button);});
     $('#previous-day').onclick=()=>navigate(currentDay.number-1);$('#next-day').onclick=()=>navigate(currentDay.number+1);
   }catch(error){const box=element('div',undefined,'load-error');box.append(element('h2','行程暫時無法讀取'),element('p','請確認網路連線後重試。'));const retry=element('button','重新讀取');retry.onclick=start;box.append(retry);$('#day-content').replaceChildren(box);$('#previous-day').disabled=true;$('#next-day').disabled=true;}

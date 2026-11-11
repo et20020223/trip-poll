@@ -2776,28 +2776,58 @@
             {
               "name": "麦と麺助",
               "action": "出發",
-              "info": "午餐後"
+              "info": "午餐後約12:30出發，步行前往中崎町。"
             },
             {
-              "name": "OSA COFFEE → grenier",
-              "action": "步行",
-              "info": "中崎町周邊"
+              "name": "OSA COFFEE 中崎町店",
+              "action": "咖啡休息",
+              "info": "12:30～13:20喝咖啡，接著步行往梅田。"
             },
             {
-              "name": "HEP FIVE → 阪急梅田 → LUCUA",
-              "action": "步行",
-              "info": "依購物時間與集合彈性調整"
+              "name": "grenier 梅田店",
+              "action": "買甜點",
+              "info": "13:20～14:00買千層酥，之後步行前往阪神梅田本店。"
+            },
+            {
+              "name": "阪神梅田本店",
+              "action": "買伴手禮",
+              "info": "14:00～14:45含移動與購物。可逛1F與B1食品、和洋菓子櫃位，依現場樓層導覽找店。"
+            },
+            {
+              "name": "阪急梅田本店 B1",
+              "action": "購物",
+              "info": "14:45～15:30買伴手禮，接著步行往LUCUA。"
+            },
+            {
+              "name": "BEAMS｜LUCUA 3F",
+              "action": "逛街",
+              "info": "15:30～16:15購物，之後依行程前往西梅田搭四橋線。"
             }
           ],
           "edges": [
             {
               "mode": "walk",
-              "line": "步行至咖啡、甜點店",
+              "line": "步行至中崎町咖啡店",
               "direction": ""
             },
             {
               "mode": "walk",
-              "line": "步行逛梅田商圈",
+              "line": "步行往梅田、grenier",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "步行至阪神梅田本店",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "步行至阪急梅田本店",
+              "direction": ""
+            },
+            {
+              "mode": "walk",
+              "line": "步行至LUCUA",
               "direction": ""
             }
           ],
