@@ -39,3 +39,20 @@ function renderPreparation(focusId){prepBody.replaceChildren();const done=prepIt
  const source=make('a','開啟共用行程表 ↗','travel-reference');source.href='https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit';source.target='_blank';source.rel='noopener noreferrer';prepBody.append(source);
  if(focusId){const target=prepBody.querySelector('#prep-'+focusId)||prepBody.querySelector('.prep-filters [aria-pressed="true"]');target?.focus({preventScroll:true});}}
 const prepNav=document.querySelector('.page-switch');if(prepNav){const b=make('button','行前準備','preparation-trigger');b.type='button';b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-controls','preparation');b.onclick=openPreparation;prepNav.append(b);}
+
+const usefulLinks=modal('useful-links','常用網頁','TRAVEL LINKS');
+const usefulLinkList=make('div',undefined,'useful-links-list');
+const usefulWebsites=[
+ {title:'Visit Japan Web',description:'填寫入境資料與開啟入境所需資訊。',links:[['開啟網站','https://services.digital.go.jp/zh-cmn-hant/visit-japan-web/']]},
+ {title:'WEST QR',description:'登入查看車票，或查閱票券登錄與搭乘操作說明。',links:[['登入 WEST QR','https://guest-ui.west-qr.com/#/packages/login/index'],['使用說明','https://www.westjr.co.jp/global/tc/ticket/westqr/userguide/']]},
+ {title:'日本氣象廳',description:'查看京都、大阪天氣，出門前確認是否需要雨具。',links:[['查看天氣','https://www.jma.go.jp/bosai/forecast/']]}
+];
+for(const website of usefulWebsites){
+ const card=make('article',undefined,'useful-link-card');
+ card.append(make('h3',website.title),make('p',website.description));
+ const actions=make('div',undefined,'useful-link-actions');
+ website.links.forEach(([label,url],index)=>{const link=make('a',label+' ↗',index===0?'travel-primary':'travel-secondary');link.href=url;link.target='_blank';link.rel='noopener noreferrer';actions.append(link);});
+ card.append(actions);usefulLinkList.append(card);
+}
+usefulLinks.append(usefulLinkList);
+if(prepNav){const button=make('button','常用網頁','useful-links-trigger');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls',usefulLinks.id);button.onclick=()=>usefulLinks.showModal();prepNav.append(button);}
