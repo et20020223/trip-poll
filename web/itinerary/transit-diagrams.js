@@ -1,9 +1,9 @@
-import {createTransportPolicies} from './transport-policies.js?v=1';
+import {createTransportPolicies} from './transport-policies.js?v=2';
 import {openRailMap} from './kyoto-map.js?v=3';
 import {createBusMapButton} from './bus-maps.js?v=1';
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let loading;
-function load(){return loading ||= Promise.all([fetch('./transport-route-data.json?v=2'),fetch('./transport-data.json?v=1')]).then(async responses=>{if(responses.some(r=>!r.ok))throw Error('read');const [routes,data]=await Promise.all(responses.map(r=>r.json()));return {routes,records:data.records};}).catch(error=>{loading=null;throw error;});}
+function load(){return loading ||= Promise.all([fetch('./transport-route-data.json?v=3'),fetch('./transport-data.json?v=2')]).then(async responses=>{if(responses.some(r=>!r.ok))throw Error('read');const [routes,data]=await Promise.all(responses.map(r=>r.json()));return {routes,records:data.records};}).catch(error=>{loading=null;throw error;});}
 const icons={train:'M5 4h14v12H5z M5 10h14 M8 4V2m8 2V2 M8 19l-2 3m10-3 2 3 M8 14h.01M16 14h.01',bus:'M5 5h14v13H5z M5 11h14 M8 5V3h8v2 M8 15h.01M16 15h.01 M7 18v3m10-3v3',walk:'M14 3h.01 M12 7l-3 5 4 2-2 7m2-7 5 6M12 7l4 4 4 1M9 12H5',taxi:'M4 12l2-6h12l2 6v7H4z M4 12h16 M9 6V3h6v3 M7 16h.01M17 16h.01 M6 19v2m12-2v2'};
 function icon(mode){const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.8');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');const path=document.createElementNS(ns,'path');path.setAttribute('d',icons[mode]||icons.train);svg.append(path);return svg;}
 function placeQuery(name,region){if(name==='京都住宿')return '京都市東山区西御門町440-10';if(name==='大阪住宿')return '大阪市西成区鶴見橋1丁目17-5';return name+' '+(region==='kyoto'?'京都 日本':region==='osaka'?'大阪 日本':'日本');}

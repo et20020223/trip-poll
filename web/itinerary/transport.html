@@ -19,7 +19,7 @@
     @media(max-width:360px){.transport-page .page-switch{margin-left:14px;margin-right:14px}.guide-days button{font-size:10px}.guide-content{font-size:13px}}
     @media print{.page-switch,.guide-filter,.guide-search,.guide-groups,.guide-controls,.transport-bottom,.guide-diagram{display:none}.transport-main{max-width:none;padding:0}.guide-card{break-inside:avoid}.guide-content{display:block}.guide-card>summary:after{display:none}}
   </style>
-  <script type="module" src="./travel-tools.js?v=12"></script>
+  <script type="module" src="./travel-tools.js?v=13"></script>
   <link rel="stylesheet" href="./kyoto-map.css?v=3">
   <link rel="stylesheet" href="./bus-maps.css?v=1">
   <script type="module" src="./kyoto-map.js?v=3"></script>
@@ -44,9 +44,9 @@
   <div id="guide-toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p class="noscript">請開啟 JavaScript，或<a href="https://docs.google.com/spreadsheets/d/1z0zgebOMYZkTfqU8UDCuEFZZlC7EIpH_/edit?gid=1116814390#gid=1116814390">查看原始搭車攻略</a>。</p></noscript>
   <script type="module">
-    import {createTransportPolicies,createPolicyOverview} from './transport-policies.js?v=1';
+    import {createTransportPolicies,createPolicyOverview} from './transport-policies.js?v=2';
     document.querySelector('.guide-basics').before(createPolicyOverview());
-    import {createJourneyButton} from './transit-diagrams.js?v=6';
+    import {createJourneyButton} from './transit-diagrams.js?v=7';
     const $ = selector => document.querySelector(selector);
     const make = (tag, text, name) => {const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(name)node.className=name;return node;};
     const plans={2:[['all','全部方案'],['b','B・宇治'],['a','A・東山備選']],3:[['all','全部方案'],['a','A・路線 1'],['b','B・高雄三尾'],['special','隱藏・豬一 / 新風館']],5:[['all','全部方案'],['a','A・USJ'],['b','B・自由行 / 隱藏']]};
@@ -76,7 +76,7 @@
       [...new Set(records.map(r=>r.day))].forEach(number=>{const section=make('section',undefined,'guide-day-section'),heading=make('div',undefined,'guide-day-title'),link=make('a','查看當日行程 ↗');link.href=itineraryLink(number,group);heading.append(make('h2',`DAY ${String(number).padStart(2,'0')} · 11/${number+11}`),link);section.append(heading);records.filter(r=>r.day===number).forEach(r=>section.append(card(r)));view.append(section);});
       updateExpand();updateReturnLink();
     }
-    async function start(){try{const response=await fetch('./transport-data.json?v=1');if(!response.ok)throw Error('read');data=await response.json();if(!Array.isArray(data.records)||!data.records.length)throw Error('data');$('#guide-confirmed').textContent=data.confirmation;$('#guide-notes').replaceChildren(...data.notes.map(note=>make('p',note)));$('#guide-diagram-note').textContent=data.diagramNote;$('#guide-source').href=data.sourceUrl;readState();renderControls();render();}catch{const box=make('div',undefined,'load-error');box.append(make('p','搭車攻略暫時無法讀取，請確認網路連線。'));const retry=make('button','重新讀取');retry.onclick=start;box.append(retry);$('#guide-results').replaceChildren(box);$('#guide-expand').disabled=true;}}
+    async function start(){try{const response=await fetch('./transport-data.json?v=2');if(!response.ok)throw Error('read');data=await response.json();if(!Array.isArray(data.records)||!data.records.length)throw Error('data');$('#guide-confirmed').textContent=data.confirmation;$('#guide-notes').replaceChildren(...data.notes.map(note=>make('p',note)));$('#guide-diagram-note').textContent=data.diagramNote;$('#guide-source').href=data.sourceUrl;readState();renderControls();render();}catch{const box=make('div',undefined,'load-error');box.append(make('p','搭車攻略暫時無法讀取，請確認網路連線。'));const retry=make('button','重新讀取');retry.onclick=start;box.append(retry);$('#guide-results').replaceChildren(box);$('#guide-expand').disabled=true;}}
     $('#guide-search').addEventListener('input',()=>{query=$('#guide-search').value;saveState();if(data)render();});
     $('#guide-expand').onclick=()=>{const cards=[...$('#guide-results').querySelectorAll('.guide-card')],open=cards.some(c=>!c.open);cards.forEach(c=>c.open=open);updateExpand();};
     $('#guide-top').onclick=()=>$('#guide-days').scrollIntoView({block:'start'});
