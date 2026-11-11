@@ -6,6 +6,53 @@ let loading;
 function load(){return loading ||= Promise.all([fetch('./transport-route-data.json?v=3'),fetch('./transport-data.json?v=2')]).then(async responses=>{if(responses.some(r=>!r.ok))throw Error('read');const [routes,data]=await Promise.all(responses.map(r=>r.json()));return {routes,records:data.records};}).catch(error=>{loading=null;throw error;});}
 const icons={train:'M5 4h14v12H5z M5 10h14 M8 4V2m8 2V2 M8 19l-2 3m10-3 2 3 M8 14h.01M16 14h.01',bus:'M5 5h14v13H5z M5 11h14 M8 5V3h8v2 M8 15h.01M16 15h.01 M7 18v3m10-3v3',walk:'M14 3h.01 M12 7l-3 5 4 2-2 7m2-7 5 6M12 7l4 4 4 1M9 12H5',taxi:'M4 12l2-6h12l2 6v7H4z M4 12h16 M9 6V3h6v3 M7 16h.01M17 16h.01 M6 19v2m12-2v2'};
 function icon(mode){const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.8');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');const path=document.createElementNS(ns,'path');path.setAttribute('d',icons[mode]||icons.train);svg.append(path);return svg;}
+
+function createStepTimeline(variant){
+ const section=make('section',undefined,'journey-steps');
+ section.append(make('h4','怎麼搭：車種、方向與轉乘','journey-steps-title'));
+ const steps=make('ol',undefined,'journey-step-list');
+ variant.nodes.forEach((node,index)=>{
+  const item=make('li'),header=make('div',undefined,'journey-step-head');
+  header.append(make('span',String(index+1),'journey-number'),make('strong',node.name),make('span',node.action,'journey-action'));
+  item.append(header,make('p',node.info));
+  const edge=variant.edges[index];
+  if(edge){const leg=make('div',undefined,'journey-leg journey-'+edge.mode);leg.append(icon(edge.mode),make('span',edge.line+(edge.direction?' · '+edge.direction:'')));item.append(leg);}
+  steps.append(item);
+ });
+ section.append(steps);return section;
+}
+
+// Every entry point uses the same numbered steps and transport icons.
+export function createJourneySteps(record,options={}){
+ const host=make('div',undefined,'journey-inline');
+ async function render(){
+  host.setAttribute('aria-busy','true');
+  host.replaceChildren(make('p','正在整理搭乘步驟…','journey-loading'));
+  try{
+   const data=await load(),journey=data.routes.journeys[record.id];
+   if(!journey?.variants.length)throw Error('missing');
+   const fixedVariant=Number.isInteger(options.variant);
+   let selected=fixedVariant?options.variant:0;
+   if(!journey.variants[selected])throw Error('variant');
+   function draw(){
+    host.replaceChildren();
+    if(!fixedVariant&&journey.variants.length>1){
+     const tabs=make('div',undefined,'journey-variants');tabs.setAttribute('role','group');tabs.setAttribute('aria-label','選擇去回程或備案');
+     journey.variants.forEach((variant,index)=>{const button=make('button',variant.label);button.type='button';button.setAttribute('aria-pressed',String(index===selected));button.onclick=()=>{selected=index;draw();host.querySelector('[aria-pressed=true]')?.focus({preventScroll:true});};tabs.append(button);});host.append(tabs);
+    }
+    if(options.label)host.append(make('p',options.label,'journey-variant-label'));
+    const variant=journey.variants[selected];host.append(createStepTimeline(variant));
+    if(variant.note)host.append(make('p',variant.note,'journey-caution'));
+   }
+   draw();
+  }catch{
+   host.replaceChildren(make('p',record.steps||'搭乘步驟暫時無法讀取，請確認網路後重試。','journey-load-error'));
+   const retry=make('button','重新讀取搭乘步驟','journey-open');retry.type='button';retry.onclick=render;host.append(retry);
+  }finally{host.removeAttribute('aria-busy');}
+ }
+ render();return host;
+}
+
 function placeQuery(name,region){if(name==='京都住宿')return '京都市東山区西御門町440-10';if(name==='大阪住宿')return '大阪市西成区鶴見橋1丁目17-5';return name+' '+(region==='kyoto'?'京都 日本':region==='osaka'?'大阪 日本':'日本');}
 function show(id,index,data,returnFocus){const record=data.records.find(r=>r.id===id),journey=data.routes.journeys[id];if(!record||!journey)throw Error('missing');const v=journey.variants[index],pins=v.nodes.flatMap((node,i)=>{const anchor=data.routes.anchors[node.anchor];return anchor?[{point:anchor.slice(1),number:i+1,label:node.action+'：'+node.name,action:node.action}]:[];}),hasMap=pins.length>0||v.traces.length>0,panel=make('section',undefined,'journey-panel');panel.setAttribute('aria-label','本段搭乘示意');
  const pickLabel=make('label','切換搭車攻略','journey-select-label'),pick=make('select');pick.setAttribute('aria-label','選擇要看的搭乘圖');for(let day=1;day<=6;day++){const group=make('optgroup');group.label=`DAY ${day} · 11/${day+11}`;for(const row of data.records.filter(r=>r.day===day)){const option=make('option',`${row.plan}｜${row.title}`);option.value=row.id;group.append(option);}pick.append(group);}pick.value=id;pick.onchange=()=>{show(pick.value,0,data);document.querySelector('.journey-select-label select')?.focus({preventScroll:true});};pickLabel.append(pick);panel.append(pickLabel,make('h3',record.title,'journey-title'),make('p',record.time,'journey-time'));
@@ -13,7 +60,7 @@ function show(id,index,data,returnFocus){const record=data.records.find(r=>r.id=
  const busButton=createBusMapButton(id);if(busButton)panel.append(busButton);
  const policies=createTransportPolicies(id,{variant:index,collapsible:true});if(policies)panel.append(policies);
  const strip=make('ol',undefined,'journey-stop-strip');v.nodes.forEach((node,i)=>{const li=make('li');li.append(make('span',String(i+1),'journey-number'),make('span',node.name));strip.append(li);});panel.append(strip);
- const details=make('details',undefined,'journey-steps');details.open=!hasMap;details.append(make('summary','怎麼搭：車種、方向與轉乘'));const steps=make('ol',undefined,'journey-step-list');v.nodes.forEach((node,i)=>{const li=make('li'),header=make('div',undefined,'journey-step-head');header.append(make('span',String(i+1),'journey-number'),make('strong',node.name),make('span',node.action,'journey-action'));li.append(header,make('p',node.info));const edge=v.edges[i];if(edge){const leg=make('div',undefined,'journey-leg journey-'+edge.mode);leg.append(icon(edge.mode),make('span',edge.line+(edge.direction?' · '+edge.direction:'')));li.append(leg);}steps.append(li);});details.append(steps);panel.append(details);
+ const details=createStepTimeline(v);panel.append(details);
  const noteHost=hasMap?details:panel;if(v.note)noteHost.append(make('p',v.note,'journey-caution'));noteHost.append(make('p',record.note,'journey-caution'));if(record.userReminder)noteHost.append(make('p',record.userReminder,'journey-caution'));
  const links=make('div',undefined,'journey-links'),original=make('a','查看參考資料 ↗');original.href=record.reference;original.target='_blank';original.rel='noopener noreferrer';links.append(original);
  if(v.edges.some(edge=>edge.mode!=='train')){const a=make('a','Google Maps 查看這段 ↗'),first=v.nodes[0],last=v.nodes.at(-1),mode=v.edges.every(edge=>edge.mode==='walk')?'walking':v.edges.some(edge=>edge.mode==='taxi')?'driving':'transit';a.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(placeQuery(first.name,v.region))+'&destination='+encodeURIComponent(placeQuery(last.name,v.region))+'&travelmode='+mode;a.target='_blank';a.rel='noopener noreferrer';links.append(a);}(hasMap?details:panel).append(links);

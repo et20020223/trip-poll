@@ -9,3 +9,15 @@
 .event-journey-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;white-space:normal}.event-journey-links .journey-open{max-width:100%;text-align:left;line-height:1.7}
 
 .event-journey-links:first-child{margin-top:6px;margin-bottom:12px}
+
+/* Numbered riding instructions are shared by daily details, guides and cards. */
+.journey-inline{white-space:normal;min-width:0}
+.journey-steps-title{font-size:14px;font-weight:750;line-height:1.7;margin:0;padding:12px 0;color:var(--green)}
+.journey-steps .journey-step-head{font-size:16px;line-height:1.65}
+.journey-steps .journey-step-list p{font-size:13px;line-height:1.9;margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.journey-steps .journey-leg{font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.journey-inline .journey-variants{margin-top:12px}
+.journey-loading,.journey-variant-label{font-size:12px;color:var(--muted);line-height:1.8}
+.guide-content .journey-steps-title{font-size:14px;margin:0;padding:12px 0}
+.ride-ticket .journey-steps{padding:0 12px}
+@media(max-width:600px){.journey-steps .journey-step-head{font-size:15px}.journey-steps .journey-leg{font-size:13px}}
